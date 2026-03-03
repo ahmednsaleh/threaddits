@@ -86,9 +86,15 @@ export default function SettingsPage() {
       if (error) throw error;
       if (data?.url) {
         window.location.href = data.url;
+      } else {
+        // Portal returned no URL — Stripe Customer Portal may not be configured
+        toast.error('Billing portal unavailable', {
+          description: 'The billing portal is not configured yet. Please contact support@threaddits.com to manage your subscription.',
+        });
       }
     } catch (err: any) {
       toast.error('Failed to open billing portal', { description: err.message });
+    } finally {
       setPortalLoading(false);
     }
   };
