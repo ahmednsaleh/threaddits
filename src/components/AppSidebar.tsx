@@ -1,27 +1,26 @@
-
-import * as React from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { cn } from '../lib/utils';
+import * as React from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { cn } from "../lib/utils";
 import {
   LayoutDashboard,
   MessageSquare,
   Layers,
   CreditCard,
   X,
-  LogOut
-} from 'lucide-react';
-import { Button } from './ui/button';
-import { Logo } from './Logo';
-import { useAuth } from '../contexts/AuthContext';
-import { useTotalNewLeadsCount } from '../hooks/useTotalNewLeadsCount';
-import { useUserProfile } from '../hooks/useUserProfile';
-import { supabase } from '../integrations/supabase/client';
+  LogOut,
+} from "lucide-react";
+import { Button } from "./ui/button";
+import { Logo } from "./Logo";
+import { useAuth } from "../contexts/AuthContext";
+import { useTotalNewLeadsCount } from "../hooks/useTotalNewLeadsCount";
+import { useUserProfile } from "../hooks/useUserProfile";
+import { supabase } from "../integrations/supabase/client";
 
 const navItems = [
-  { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { href: '/feed', icon: MessageSquare, label: 'Leads' },
-  { href: '/products', icon: Layers, label: 'Products' },
-  { href: '/settings', icon: CreditCard, label: 'Billing' },
+  { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+  { href: "/feed", icon: MessageSquare, label: "Leads" },
+  { href: "/products", icon: Layers, label: "Products" },
+  { href: "/settings", icon: CreditCard, label: "Billing" },
 ];
 
 interface AppSidebarProps {
@@ -30,7 +29,11 @@ interface AppSidebarProps {
   onMobileClose?: () => void;
 }
 
-export const AppSidebar: React.FC<AppSidebarProps> = ({ className, isMobileOpen, onMobileClose }) => {
+export const AppSidebar: React.FC<AppSidebarProps> = ({
+  className,
+  isMobileOpen,
+  onMobileClose,
+}) => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { data: newLeadsCount = 0 } = useTotalNewLeadsCount();
@@ -38,46 +41,52 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ className, isMobileOpen,
   const [profileData, setProfileData] = React.useState<{
     fullName: string;
     avatarUrl: string | null;
-  }>({ fullName: '', avatarUrl: null });
+  }>({ fullName: "", avatarUrl: null });
 
   React.useEffect(() => {
     const fetchProfile = async () => {
       if (!user?.id) return;
-      
+
       const { data } = await supabase
-        .from('users')
-        .select('full_name, avatar_url')
-        .eq('id', user.id)
+        .from("users")
+        .select("full_name, avatar_url")
+        .eq("id", user.id)
         .single();
-      
+
       if (data) {
         setProfileData({
-          fullName: data.full_name || '',
-          avatarUrl: data.avatar_url
+          fullName: data.full_name || "",
+          avatarUrl: data.avatar_url,
         });
       }
     };
-    
+
     fetchProfile();
-    
+
     // Listen for updates from profile page
     const handleProfileUpdate = (event: CustomEvent) => {
       setProfileData({
         fullName: event.detail.fullName,
-        avatarUrl: event.detail.avatarUrl
+        avatarUrl: event.detail.avatarUrl,
       });
     };
-    
-    window.addEventListener('profile-updated', handleProfileUpdate as EventListener);
-    
+
+    window.addEventListener(
+      "profile-updated",
+      handleProfileUpdate as EventListener,
+    );
+
     return () => {
-      window.removeEventListener('profile-updated', handleProfileUpdate as EventListener);
+      window.removeEventListener(
+        "profile-updated",
+        handleProfileUpdate as EventListener,
+      );
     };
   }, [user?.id]);
 
   const handleLogout = async () => {
     await signOut();
-    navigate('/auth');
+    navigate("/auth");
   };
 
   const NavLinks = () => (
@@ -86,23 +95,28 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ className, isMobileOpen,
         <NavLink
           key={item.label}
           to={item.href}
-          end={item.href === '/dashboard'}
+          end={item.href === "/dashboard"}
           className={({ isActive }) =>
             cn(
-              'relative flex items-center gap-3 rounded-full px-4 py-3 text-base font-medium transition-colors',
+              "relative flex items-center gap-3 rounded-full px-4 py-3 text-base font-medium transition-colors",
               isActive
-                ? 'bg-white/10 text-white'
-                : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                ? "bg-white/10 text-white"
+                : "text-slate-400 hover:bg-white/5 hover:text-white",
             )
           }
         >
           {({ isActive }) => (
             <>
-              {isActive && <div className="absolute left-1 top-1/2 -translate-y-1/2 h-8 w-1 bg-[#C2410C] rounded-full" />}
+              {isActive && (
+                <div className="absolute left-1 top-1/2 -translate-y-1/2 h-8 w-1 bg-[#C2410C] rounded-full" />
+              )}
               <item.icon className="h-5 w-5" />
               <span className="flex-1">{item.label}</span>
-              {item.label === 'Leads' && newLeadsCount > 0 && (
-                <span className="rounded-full bg-[#C2410C] px-2.5 py-0.5 text-[11px] font-bold text-white">
+              {item.label === "Leads" && newLeadsCount > 0 && (
+                <span
+                  className="rounded-full bg-[#C2410C] px-2.5 py-0.5 text-[11px] font-bold text-white"
+                  title="New leads across all products"
+                >
                   {newLeadsCount}
                 </span>
               )}
@@ -117,18 +131,23 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ className, isMobileOpen,
     <aside
       className={cn(
         "fixed inset-y-0 left-0 z-50 flex h-full w-72 flex-col border-r border-slate-800 bg-[#0F172A] transition-transform duration-300 ease-in-out md:translate-x-0",
-        isMobileOpen ? 'translate-x-0' : '-translate-x-full',
-        className
+        isMobileOpen ? "translate-x-0" : "-translate-x-full",
+        className,
       )}
     >
       {/* Header */}
       <div className="flex h-20 items-center justify-between px-6 flex-shrink-0">
         <NavLink to="/dashboard" className="flex-shrink-0 select-none">
-           <Logo variant="light" />
+          <Logo variant="light" />
         </NavLink>
-        <Button variant="ghost" size="icon" className="md:hidden text-slate-400 hover:text-white rounded-full" onClick={onMobileClose}>
-           <X className="h-6 w-6" />
-           <span className="sr-only">Close sidebar</span>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden text-slate-400 hover:text-white rounded-full"
+          onClick={onMobileClose}
+        >
+          <X className="h-6 w-6" />
+          <span className="sr-only">Close sidebar</span>
         </Button>
       </div>
 
@@ -140,30 +159,40 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ className, isMobileOpen,
       {/* Footer / User Area */}
       <div className="mt-auto border-t border-slate-800 p-4 flex items-center justify-between gap-2">
         {/* Left Side: Profile Link */}
-        <NavLink 
+        <NavLink
           to="/profile"
-          className={({ isActive }) => cn(
-            "flex items-center gap-3 flex-1 min-w-0 p-2 rounded-xl transition-all duration-200 group text-left outline-none hover:opacity-80",
-            isActive ? "bg-slate-800" : "hover:bg-slate-800"
-          )}
+          className={({ isActive }) =>
+            cn(
+              "flex items-center gap-3 flex-1 min-w-0 p-2 rounded-xl transition-all duration-200 group text-left outline-none hover:opacity-80",
+              isActive ? "bg-slate-800" : "hover:bg-slate-800",
+            )
+          }
         >
           <div className="h-10 w-10 rounded-full bg-slate-700 flex items-center justify-center text-sm font-bold text-white ring-2 ring-slate-600 group-hover:ring-slate-500 transition-all flex-shrink-0 overflow-hidden">
             {profileData.avatarUrl ? (
-              <img src={profileData.avatarUrl} alt="Profile" className="w-full h-full object-cover" />
+              <img
+                src={profileData.avatarUrl}
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
             ) : (
-              user?.email?.slice(0, 2).toUpperCase() || 'U'
+              user?.email?.slice(0, 2).toUpperCase() || "U"
             )}
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-white truncate">
-              {profileData.fullName || user?.email?.split('@')[0] || 'User'}
+              {profileData.fullName || user?.email?.split("@")[0] || "User"}
             </p>
-            <p className="text-xs text-slate-400 truncate">{userProfile?.subscription_tier ? `${userProfile.subscription_tier.charAt(0).toUpperCase()}${userProfile.subscription_tier.slice(1)} Plan` : 'Free Plan'}</p>
+            <p className="text-xs text-slate-400 truncate">
+              {userProfile?.subscription_tier
+                ? `${userProfile.subscription_tier.charAt(0).toUpperCase()}${userProfile.subscription_tier.slice(1)} Plan`
+                : "Free Plan"}
+            </p>
           </div>
         </NavLink>
 
         {/* Right Side: Log Out Button */}
-        <button 
+        <button
           onClick={handleLogout}
           className="p-2.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-500/10 transition-all flex-shrink-0 group"
           title="Log out"

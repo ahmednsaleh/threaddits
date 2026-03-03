@@ -17,6 +17,7 @@ import {
   Signal,
   ExternalLink,
   Zap,
+  Clock,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 import { Button } from "./ui/button";
@@ -135,7 +136,27 @@ export const LeadCard: React.FC<LeadCardProps> = ({
   const cleanProblem = problem_statement_detail
     .replace(/[.!?;,]+$/, "")
     .toLowerCase();
-  const aiDraft = `Hi u/${username}, saw your post on ${cleanSubreddit} about "${post_title}". \n\nIt sounds like ${cleanProblem} is a major bottleneck right now. Since you're looking for a better way to handle this, you might find ${product_name} useful.\n\nWould love to know if this fits your current workflow!`;
+  const aiDraft = `Hey u/${username} — the ${cleanProblem} issue is something we ran into when building ${product_name}.\n\nHappy to share what worked for us if you're still exploring options. What does your current setup look like?`;
+
+  const getFreshnessWarning = (
+    timeAgo: string,
+  ): { level: "warn" | "stale" | null } => {
+    const match = timeAgo.match(
+      /(\d+)\s+(second|minute|hour|day|week|month|year)/i,
+    );
+    if (!match) return { level: null };
+    const value = parseInt(match[1]);
+    const unit = match[2].toLowerCase();
+    let days = 0;
+    if (unit.startsWith("day")) days = value;
+    else if (unit.startsWith("week")) days = value * 7;
+    else if (unit.startsWith("month")) days = value * 30;
+    else if (unit.startsWith("year")) days = value * 365;
+    if (days >= 90) return { level: "stale" };
+    if (days >= 30) return { level: "warn" };
+    return { level: null };
+  };
+  const freshnessWarning = getFreshnessWarning(time_ago);
 
   const handleDraftToggle = () => {
     if (!isDraftVisible) {
@@ -152,7 +173,7 @@ export const LeadCard: React.FC<LeadCardProps> = ({
   const handleCopy = () => {
     navigator.clipboard.writeText(aiDraft);
     setCopied(true);
-    toast.success('Copied to clipboard!');
+    toast.success("Copied to clipboard!");
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -258,7 +279,21 @@ export const LeadCard: React.FC<LeadCardProps> = ({
             {cleanSubreddit}
           </span>
           <span className="text-slate-300">•</span>
-          <span>{time_ago}</span>
+          {freshnessWarning.level ? (
+            <span
+              className={cn(
+                "flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold",
+                freshnessWarning.level === "stale"
+                  ? "bg-red-50 text-red-600 border border-red-100"
+                  : "bg-amber-50 text-amber-600 border border-amber-100",
+              )}
+            >
+              <Clock className="w-3 h-3" />
+              {time_ago}
+            </span>
+          ) : (
+            <span>{time_ago}</span>
+          )}
           <span className="text-slate-300 hidden sm:inline">•</span>
           <a
             href={post_url}
