@@ -1,8 +1,13 @@
-import * as React from 'react';
-import { useState, useEffect } from 'react';
-import { Button } from '../components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { cn } from '../lib/utils';
+import * as React from "react";
+import { useState, useEffect } from "react";
+import { Button } from "../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { cn } from "../lib/utils";
 import {
   Zap,
   CreditCard,
@@ -11,89 +16,132 @@ import {
   FileText,
   Package,
   Lock,
-  Loader2
-} from 'lucide-react';
+  Loader2,
+  Bell,
+  Save,
+} from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '../components/ui/tooltip';
-import { useAuth } from '../contexts/AuthContext';
-import { supabase } from '../integrations/supabase/client';
-import { toast } from 'sonner';
+} from "../components/ui/tooltip";
+import { useAuth } from "../contexts/AuthContext";
+import { supabase } from "../integrations/supabase/client";
+import { toast } from "sonner";
 
 export default function SettingsPage() {
   const { user, session } = useAuth();
-  const [subscriptionTier, setSubscriptionTier] = useState<string>('starter');
+  const [subscriptionTier, setSubscriptionTier] = useState<string>("starter");
   const [loading, setLoading] = useState(true);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [portalLoading, setPortalLoading] = useState(false);
+  const [telegramChatId, setTelegramChatId] = useState("");
+  const [savingNotifications, setSavingNotifications] = useState(false);
 
   useEffect(() => {
     async function fetchProfile() {
       if (!user) return;
       const { data, error } = await supabase
-        .from('users')
-        .select('subscription_tier')
-        .eq('id', user.id)
+        .from("users")
+        .select("subscription_tier")
+        .eq("id", user.id)
         .single();
 
       if (!error && data) {
-        setSubscriptionTier(data.subscription_tier || 'starter');
+        setSubscriptionTier(data.subscription_tier || "starter");
       }
       setLoading(false);
     }
     fetchProfile();
   }, [user]);
 
-  const isPro = subscriptionTier === 'pro';
-  const isStarter = subscriptionTier === 'starter';
+  useEffect(() => {
+    async function fetchNotificationSettings() {
+      if (!user) return;
+      const { data } = await supabase
+        .from('users')
+        .select('telegram_chat_id')
+        .eq('id', user.id)
+        .single();
+      if (data?.telegram_chat_id) setTelegramChatId(data.telegram_chat_id);
+    }
+    fetchNotificationSettings();
+  }, [user]);
+
+  const handleSaveNotifications = async () => {
+    if (!user) return;
+    setSavingNotifications(true);
+    try {
+      const { error } = await supabase
+        .from('users')
+        .update({ telegram_chat_id: telegramChatId })
+        .eq('id', user.id);
+      if (error) throw error;
+      toast.success('Notification settings saved');
+    } catch (err: any) {
+      toast.error('Failed to save', { description: err.message });
+    } finally {
+      setSavingNotifications(false);
+    }
+  };
+
+  const isPro = subscriptionTier === "pro";
+  const isStarter = subscriptionTier === "starter";
   const isFree = !isPro && !isStarter;
 
-  const handleUpgrade = async (plan: 'starter' | 'pro' = 'starter') => {
+  const handleUpgrade = async (plan: "starter" | "pro" = "starter") => {
     if (!session?.access_token) {
-      toast.error('Please sign in first');
+      toast.error("Please sign in first");
       return;
     }
     setCheckoutLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('create-stripe-checkout-session', {
-        body: { plan },
-      });
+      const { data, error } = await supabase.functions.invoke(
+        "create-stripe-checkout-session",
+        {
+          body: { plan },
+        },
+      );
 
       if (error) throw error;
       if (data?.url) {
         window.location.href = data.url;
       }
     } catch (err: any) {
-      toast.error('Failed to start checkout', { description: err.message });
+      toast.error("Failed to start checkout", { description: err.message });
       setCheckoutLoading(false);
     }
   };
 
   const handleManageBilling = async () => {
     if (!session?.access_token) {
-      toast.error('Please sign in first');
+      toast.error("Please sign in first");
       return;
     }
     setPortalLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('create-portal-session', {
-        body: {},
-      });
+      const { data, error } = await supabase.functions.invoke(
+        "create-portal-session",
+        {
+          body: {},
+        },
+      );
 
       if (error) throw error;
       if (data?.url) {
         window.location.href = data.url;
       } else {
         // Portal returned no URL — Stripe Customer Portal may not be configured
-        toast.error('Billing portal unavailable', {
-          description: 'The billing portal is not configured yet. Please contact support@threaddits.com to manage your subscription.',
+        toast.error("Billing portal unavailable", {
+          description:
+            "The billing portal is not configured yet. Please contact support@threaddits.com to manage your subscription.",
         });
       }
     } catch (err: any) {
-      toast.error('Failed to open billing portal', { description: err.message });
+      toast.error("Failed to open billing portal", {
+        description: err.message,
+      });
     } finally {
       setPortalLoading(false);
     }
@@ -112,8 +160,12 @@ export default function SettingsPage() {
       <div className="mx-auto w-full max-w-6xl space-y-8">
         {/* Page Header */}
         <div className="flex flex-col gap-1">
-          <h1 className="text-4xl font-bold tracking-tight text-[#2C3E50]">Plans & Billing</h1>
-          <p className="text-slate-500 text-lg font-medium">Manage your subscription and billing history.</p>
+          <h1 className="text-4xl font-bold tracking-tight text-[#2C3E50]">
+            Plans & Billing
+          </h1>
+          <p className="text-slate-500 text-lg font-medium">
+            Manage your subscription and billing history.
+          </p>
         </div>
 
         {/* Primary Action: Subscription & Upgrade */}
@@ -124,7 +176,9 @@ export default function SettingsPage() {
                 <div className="p-2 bg-white rounded-lg border border-slate-200">
                   <CreditCard className="w-5 h-5 text-[#2C3E50]" />
                 </div>
-                <CardTitle className="text-lg font-bold text-[#2C3E50] uppercase tracking-wider">Current Subscription</CardTitle>
+                <CardTitle className="text-lg font-bold text-[#2C3E50] uppercase tracking-wider">
+                  Current Subscription
+                </CardTitle>
               </div>
               <div className="flex items-center px-4 py-1 rounded-full bg-slate-900 text-white text-[10px] font-bold uppercase tracking-[0.2em] shadow-sm">
                 {subscriptionTier.toUpperCase()}
@@ -135,23 +189,34 @@ export default function SettingsPage() {
             <div className="flex flex-col lg:flex-row items-center gap-10">
               <div className="flex-1 space-y-6 w-full">
                 <div className="space-y-4">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] font-mono ml-1">Product Capacity</p>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] font-mono ml-1">
+                    Product Capacity
+                  </p>
                   <div className="flex items-center gap-4">
                     <TooltipProvider>
                       <div className="flex flex-col items-center gap-2">
                         <div className="w-16 h-16 rounded-xl bg-white border border-slate-900 flex items-center justify-center">
                           <Package className="w-7 h-7 text-[#2C3E50]" />
                         </div>
-                        <span className="text-[10px] font-bold text-[#2C3E50] uppercase tracking-widest font-mono">Active</span>
+                        <span className="text-[10px] font-bold text-[#2C3E50] uppercase tracking-widest font-mono">
+                          Active
+                        </span>
                       </div>
                       {Array.from({ length: 2 }).map((_, i) => (
-                        <div key={i} className="flex flex-col items-center gap-2 opacity-80">
+                        <div
+                          key={i}
+                          className="flex flex-col items-center gap-2 opacity-80"
+                        >
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <div className={cn(
-                                "w-16 h-16 rounded-xl flex items-center justify-center cursor-help",
-                                isPro ? "bg-white border border-slate-900" : "bg-slate-100"
-                              )}>
+                              <div
+                                className={cn(
+                                  "w-16 h-16 rounded-xl flex items-center justify-center cursor-help",
+                                  isPro
+                                    ? "bg-white border border-slate-900"
+                                    : "bg-slate-100",
+                                )}
+                              >
                                 {isPro ? (
                                   <Package className="w-6 h-6 text-[#2C3E50]" />
                                 ) : (
@@ -178,30 +243,47 @@ export default function SettingsPage() {
                   <>
                     <div className="flex items-center gap-3 mb-4">
                       <Zap className="w-6 h-6 text-emerald-400 fill-emerald-400" />
-                      <span className="font-bold text-lg tracking-tight">Pro Plan Active</span>
+                      <span className="font-bold text-lg tracking-tight">
+                        Pro Plan Active
+                      </span>
                     </div>
-                    <p className="text-slate-300 text-sm leading-relaxed mb-6">You have access to all features including 3-product tracking.</p>
+                    <p className="text-slate-300 text-sm leading-relaxed mb-6">
+                      You have access to all features including 3-product
+                      tracking.
+                    </p>
                     <Button
                       onClick={handleManageBilling}
                       disabled={portalLoading}
                       className="w-full bg-white text-[#2C3E50] font-bold h-11 hover:bg-slate-100 transition-all"
                     >
-                      {portalLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Manage Billing"}
+                      {portalLoading ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        "Manage Billing"
+                      )}
                     </Button>
                   </>
                 ) : isStarter ? (
                   <>
                     <div className="flex items-center gap-3 mb-4">
                       <Zap className="w-6 h-6 text-[#C2410C] fill-[#C2410C]" />
-                      <span className="font-bold text-lg tracking-tight">Starter Plan Active</span>
+                      <span className="font-bold text-lg tracking-tight">
+                        Starter Plan Active
+                      </span>
                     </div>
-                    <p className="text-slate-300 text-sm leading-relaxed mb-4">Upgrade to Pro to track up to 3 products simultaneously.</p>
+                    <p className="text-slate-300 text-sm leading-relaxed mb-4">
+                      Upgrade to Pro to track up to 3 products simultaneously.
+                    </p>
                     <Button
-                      onClick={() => handleUpgrade('pro')}
+                      onClick={() => handleUpgrade("pro")}
                       disabled={checkoutLoading}
                       className="w-full bg-[#C2410C] text-white font-bold h-11 shadow-lg shadow-[#C2410C]/20 transition-all mb-3"
                     >
-                      {checkoutLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Upgrade to Pro — $49/mo"}
+                      {checkoutLoading ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        "Upgrade to Pro — $49/mo"
+                      )}
                     </Button>
                     <Button
                       onClick={handleManageBilling}
@@ -209,29 +291,46 @@ export default function SettingsPage() {
                       variant="ghost"
                       className="w-full text-slate-300 hover:text-white hover:bg-white/10 h-9 text-sm font-medium transition-all"
                     >
-                      {portalLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Manage Billing"}
+                      {portalLoading ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        "Manage Billing"
+                      )}
                     </Button>
                   </>
                 ) : (
                   <>
                     <div className="flex items-center gap-3 mb-4">
                       <Zap className="w-6 h-6 text-[#C2410C] fill-[#C2410C]" />
-                      <span className="font-bold text-lg tracking-tight">Start Hunting</span>
+                      <span className="font-bold text-lg tracking-tight">
+                        Start Hunting
+                      </span>
                     </div>
-                    <p className="text-slate-300 text-sm leading-relaxed mb-4">Subscribe to unlock all your leads and get hourly fresh scans.</p>
+                    <p className="text-slate-300 text-sm leading-relaxed mb-4">
+                      Subscribe to unlock all your leads and get hourly fresh
+                      scans.
+                    </p>
                     <Button
-                      onClick={() => handleUpgrade('starter')}
+                      onClick={() => handleUpgrade("starter")}
                       disabled={checkoutLoading}
                       className="w-full bg-white text-[#2C3E50] font-bold h-11 hover:bg-slate-100 transition-all mb-3"
                     >
-                      {checkoutLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Starter — $29/mo · 1 product"}
+                      {checkoutLoading ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        "Starter — $29/mo · 1 product"
+                      )}
                     </Button>
                     <Button
-                      onClick={() => handleUpgrade('pro')}
+                      onClick={() => handleUpgrade("pro")}
                       disabled={checkoutLoading}
                       className="w-full bg-[#C2410C] text-white font-bold h-11 shadow-lg shadow-[#C2410C]/20 transition-all"
                     >
-                      {checkoutLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Pro — $49/mo · 3 products"}
+                      {checkoutLoading ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        "Pro — $49/mo · 3 products"
+                      )}
                     </Button>
                   </>
                 )}
@@ -241,18 +340,22 @@ export default function SettingsPage() {
         </Card>
 
         {/* Billing History Card */}
-        <Card className="rounded-2xl border-[#E2E8F0] shadow-sm overflow-hidden bg-white mb-20">
+        <Card className="rounded-2xl border-[#E2E8F0] shadow-sm overflow-hidden bg-white">
           <CardHeader className="border-b border-slate-100 bg-slate-50/30 py-5 px-8">
             <div className="flex items-center gap-3">
               <History className="w-5 h-5 text-slate-400" />
-              <CardTitle className="text-base font-bold text-[#2C3E50] uppercase tracking-wider">Billing History</CardTitle>
+              <CardTitle className="text-base font-bold text-[#2C3E50] uppercase tracking-wider">
+                Billing History
+              </CardTitle>
             </div>
           </CardHeader>
           <CardContent className="p-0">
             <div className="h-40 bg-slate-50/50 flex flex-col items-center justify-center text-center p-8">
               <FileText className="w-6 h-6 text-slate-300 mb-4" />
               <h4 className="text-sm font-bold text-[#2C3E50]">
-                {isPro ? "View invoices in the Stripe Customer Portal." : "No invoices yet."}
+                {isPro
+                  ? "View invoices in the Stripe Customer Portal."
+                  : "No invoices yet."}
               </h4>
               {isPro && (
                 <Button
@@ -263,6 +366,43 @@ export default function SettingsPage() {
                   Open Billing Portal
                 </Button>
               )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Notifications Card */}
+        <Card className="rounded-2xl border-[#E2E8F0] shadow-sm overflow-hidden bg-white mb-20">
+          <CardHeader className="border-b border-slate-100 bg-slate-50/30 py-5 px-8">
+            <div className="flex items-center gap-3">
+              <Bell className="w-5 h-5 text-slate-400" />
+              <CardTitle className="text-base font-bold text-[#2C3E50] uppercase tracking-wider">Notifications</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent className="p-8">
+            <p className="text-sm text-slate-500 mb-6 leading-relaxed">
+              Get Telegram alerts when a hot lead (score ≥8) is found. A draft reply will be pre-generated and waiting for you.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-end">
+              <div className="flex-1">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono mb-2 block">
+                  Telegram Chat ID
+                </label>
+                <input
+                  type="text"
+                  value={telegramChatId}
+                  onChange={(e) => setTelegramChatId(e.target.value)}
+                  placeholder="e.g. 5434669508"
+                  className="w-full h-11 px-4 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-[#C2410C] bg-white font-mono"
+                />
+                <p className="text-xs text-slate-400 mt-1.5">Find your ID by messaging @userinfobot on Telegram.</p>
+              </div>
+              <Button
+                onClick={handleSaveNotifications}
+                disabled={savingNotifications}
+                className="bg-[#C2410C] text-white font-bold h-11 px-6 rounded-xl hover:bg-[#A3360A] transition-all shrink-0"
+              >
+                {savingNotifications ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Save className="w-4 h-4 mr-2" />Save</>}
+              </Button>
             </div>
           </CardContent>
         </Card>
