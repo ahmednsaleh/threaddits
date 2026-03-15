@@ -32,7 +32,6 @@ export function useProducts() {
           "id, product_name, product_description, product_url, status, persona, pain_points_solved, jobs_to_be_done, business_type, keywords, subreddits, last_run_at, created_at",
         )
         .eq("user_id", user.id)
-        .eq("product_name", "Threaddits")
         .order("last_run_at", { ascending: false, nullsFirst: false });
 
       if (error) throw error;
