@@ -126,7 +126,7 @@ export const LeadCard: React.FC<LeadCardProps> = ({
   );
   const [isStatusMenuOpen, setIsStatusMenuOpen] = React.useState(false);
   const [isDismissed, setIsDismissed] = React.useState(false);
-  const [isApproved, setIsApproved] = React.useState(user_feedback === "good");
+  const [isApproved, setIsApproved] = React.useState(userFeedback === "good");
 
   // Mutations
   const updateStatus = useUpdateLeadStatus();
