@@ -4,7 +4,7 @@ import posthog from "posthog-js";
 import App from "./App.tsx";
 import "./index.css";
 
-posthog.init("phc_REPLACE_WITH_YOUR_KEY", {
+posthog.init("phc_LiabqvKxIWaKPl2IBCjODMFaufdS8LoBapPOeKdlVPO", {
   api_host: "https://us.i.posthog.com",
   person_profiles: "identified_only",
 });
