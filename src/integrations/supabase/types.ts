@@ -573,6 +573,39 @@ export type Database = {
           },
         ]
       }
+      crawl_events: {
+        Row: {
+          crawl_start_utc: string | null
+          created_at: string | null
+          duration_ms: number | null
+          error_message: string | null
+          id: string
+          posts_found: number | null
+          posts_stored: number | null
+          status: string | null
+        }
+        Insert: {
+          crawl_start_utc?: string | null
+          created_at?: string | null
+          duration_ms?: number | null
+          error_message?: string | null
+          id?: string
+          posts_found?: number | null
+          posts_stored?: number | null
+          status?: string | null
+        }
+        Update: {
+          crawl_start_utc?: string | null
+          created_at?: string | null
+          duration_ms?: number | null
+          error_message?: string | null
+          id?: string
+          posts_found?: number | null
+          posts_stored?: number | null
+          status?: string | null
+        }
+        Relationships: []
+      }
       crawler_locks: {
         Row: {
           id: string
@@ -690,6 +723,27 @@ export type Database = {
           polling_interval_seconds?: number | null
           success_count?: number | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      github_watcher_state: {
+        Row: {
+          id: number
+          last_checked_at: string | null
+          last_commit_sha: string | null
+          repo: string | null
+        }
+        Insert: {
+          id?: number
+          last_checked_at?: string | null
+          last_commit_sha?: string | null
+          repo?: string | null
+        }
+        Update: {
+          id?: number
+          last_checked_at?: string | null
+          last_commit_sha?: string | null
+          repo?: string | null
         }
         Relationships: []
       }
@@ -1085,6 +1139,7 @@ export type Database = {
       magd_content_calendar: {
         Row: {
           audience_signals_json: Json | null
+          best_post_windows: Json | null
           generated_at: string
           id: string
           plan_json: Json
@@ -1094,6 +1149,7 @@ export type Database = {
         }
         Insert: {
           audience_signals_json?: Json | null
+          best_post_windows?: Json | null
           generated_at?: string
           id?: string
           plan_json: Json
@@ -1103,6 +1159,7 @@ export type Database = {
         }
         Update: {
           audience_signals_json?: Json | null
+          best_post_windows?: Json | null
           generated_at?: string
           id?: string
           plan_json?: Json
@@ -1117,11 +1174,14 @@ export type Database = {
           calendar_slot_json: Json | null
           content_type: string | null
           created_at: string | null
+          draft_type: string | null
           id: string
           linkedin_posted_at: string | null
           linkedin_text: string | null
           linkedin_url: string | null
           milestone: string | null
+          post_at: string | null
+          source_ref: string | null
           status: string | null
           x_posted_at: string | null
           x_text: string | null
@@ -1131,11 +1191,14 @@ export type Database = {
           calendar_slot_json?: Json | null
           content_type?: string | null
           created_at?: string | null
+          draft_type?: string | null
           id: string
           linkedin_posted_at?: string | null
           linkedin_text?: string | null
           linkedin_url?: string | null
           milestone?: string | null
+          post_at?: string | null
+          source_ref?: string | null
           status?: string | null
           x_posted_at?: string | null
           x_text?: string | null
@@ -1145,11 +1208,14 @@ export type Database = {
           calendar_slot_json?: Json | null
           content_type?: string | null
           created_at?: string | null
+          draft_type?: string | null
           id?: string
           linkedin_posted_at?: string | null
           linkedin_text?: string | null
           linkedin_url?: string | null
           milestone?: string | null
+          post_at?: string | null
+          source_ref?: string | null
           status?: string | null
           x_posted_at?: string | null
           x_text?: string | null
@@ -1540,25 +1606,46 @@ export type Database = {
       }
       rizq_ideas: {
         Row: {
+          approval_notes: string | null
+          approved_at: string | null
           created_at: string | null
           description: string | null
           id: string
+          is_approved: boolean | null
+          last_validated_at: string | null
           pain_score: number
+          source: string | null
+          sources_seen: Json | null
           title: string
+          validation_count: number
         }
         Insert: {
+          approval_notes?: string | null
+          approved_at?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
+          is_approved?: boolean | null
+          last_validated_at?: string | null
           pain_score?: number
+          source?: string | null
+          sources_seen?: Json | null
           title: string
+          validation_count?: number
         }
         Update: {
+          approval_notes?: string | null
+          approved_at?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
+          is_approved?: boolean | null
+          last_validated_at?: string | null
           pain_score?: number
+          source?: string | null
+          sources_seen?: Json | null
           title?: string
+          validation_count?: number
         }
         Relationships: []
       }
@@ -1713,6 +1800,7 @@ export type Database = {
           idea_title: string
           leads_needed: number | null
           payment_score: number | null
+          problem_statement: string | null
           ranking: string
           ranking_rationale: string | null
           recommended_price_usd: number | null
@@ -1740,6 +1828,7 @@ export type Database = {
           idea_title: string
           leads_needed?: number | null
           payment_score?: number | null
+          problem_statement?: string | null
           ranking?: string
           ranking_rationale?: string | null
           recommended_price_usd?: number | null
@@ -1767,6 +1856,7 @@ export type Database = {
           idea_title?: string
           leads_needed?: number | null
           payment_score?: number | null
+          problem_statement?: string | null
           ranking?: string
           ranking_rationale?: string | null
           recommended_price_usd?: number | null
