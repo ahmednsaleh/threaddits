@@ -1,72 +1,84 @@
-import * as React from 'react';
-import { LeadCard } from '../LeadCard';
-import { Button } from '../ui/button';
-import { 
-  Layout, 
-  Zap, 
-  ScanLine, 
-  Signal, 
-  Search, 
-  Filter, 
-  Clock, 
-  ChevronDown 
-} from 'lucide-react';
+import * as React from "react";
+import { LeadCard } from "../LeadCard";
+import { Button } from "../ui/button";
+import {
+  Layout,
+  Zap,
+  ScanLine,
+  Signal,
+  Search,
+  Filter,
+  Clock,
+  ChevronDown,
+} from "lucide-react";
 
 export const LandingDemoFeed = () => {
   return (
     <div className="w-full h-auto bg-slate-50 flex flex-col p-6 pb-12">
       <div className="max-w-5xl mx-auto w-full space-y-8">
-        
         {/* Stats Bar (The Pipeline) */}
         <div className="bg-white border border-slate-200 rounded-2xl h-24 flex items-stretch shadow-sm overflow-hidden shrink-0">
-          
           {/* Item 1: Total Leads (Active) */}
           <div className="flex-1 flex flex-col items-center justify-center border-r border-slate-100 px-4 bg-slate-50 border-b-2 border-b-[#C2410C]">
             <div className="flex items-center gap-2 mb-2">
-               <Layout className="w-3.5 h-3.5 text-slate-400" />
-               <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-mono">Total Leads</span>
+              <Layout className="w-3.5 h-3.5 text-slate-400" />
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-mono">
+                Total Leads
+              </span>
             </div>
-            <div className="text-3xl font-mono font-bold text-slate-900 tracking-tighter leading-none">1,240</div>
+            <div className="text-3xl font-mono font-bold text-slate-900 tracking-tighter leading-none">
+              1,240
+            </div>
           </div>
 
           {/* Item 2: New */}
           <div className="flex-1 flex flex-col items-center justify-center border-r border-slate-100 px-4 hover:bg-slate-50/50 transition-colors cursor-default">
             <div className="flex items-center gap-2 mb-2">
-               <Zap className="w-3.5 h-3.5 text-[#C2410C]" />
-               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">New</span>
+              <Zap className="w-3.5 h-3.5 text-[#C2410C]" />
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
+                New
+              </span>
             </div>
-            <div className="text-3xl font-mono font-bold text-slate-900 tracking-tighter leading-none">45</div>
+            <div className="text-3xl font-mono font-bold text-slate-900 tracking-tighter leading-none">
+              45
+            </div>
           </div>
 
-          {/* Item 3: Potential */}
+          {/* Item 3: Warm Leads */}
           <div className="flex-1 flex flex-col items-center justify-center border-r border-slate-100 px-4 hover:bg-slate-50/50 transition-colors cursor-default">
             <div className="flex items-center gap-2 mb-2">
-               <ScanLine className="w-3.5 h-3.5 text-amber-600" />
-               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">Potential</span>
+              <ScanLine className="w-3.5 h-3.5 text-amber-600" />
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
+                Warm Leads
+              </span>
             </div>
-            <div className="text-3xl font-mono font-bold text-amber-600 tracking-tighter leading-none">12</div>
+            <div className="text-3xl font-mono font-bold text-amber-600 tracking-tighter leading-none">
+              12
+            </div>
           </div>
 
-          {/* Item 4: Top Matches */}
+          {/* Item 4: Hot Leads */}
           <div className="flex-1 flex flex-col items-center justify-center px-4 hover:bg-slate-50/50 transition-colors cursor-default">
             <div className="flex items-center gap-2 mb-2">
-               <Signal className="w-3.5 h-3.5 text-emerald-600" />
-               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">Top Matches</span>
+              <Signal className="w-3.5 h-3.5 text-emerald-600" />
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
+                Hot Leads
+              </span>
             </div>
-            <div className="text-3xl font-mono font-bold text-emerald-600 tracking-tighter leading-none">18</div>
+            <div className="text-3xl font-mono font-bold text-emerald-600 tracking-tighter leading-none">
+              18
+            </div>
           </div>
-
         </div>
 
         {/* Control Strip (Search & Filters) */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          
           {/* Search */}
           <div className="relative w-full group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 transition-colors group-focus-within:text-[#C2410C]" />
-            <input 
-              type="text" 
-              placeholder="Search within filtered leads..." 
+            <input
+              type="text"
+              placeholder="Search within filtered leads..."
               className="w-full h-12 pl-11 pr-4 rounded-full border border-slate-200 text-sm focus:outline-none focus:border-[#C2410C] focus:ring-1 focus:ring-[#C2410C] bg-white shadow-sm font-medium transition-all placeholder:text-slate-400 text-slate-700"
               readOnly
             />
@@ -74,14 +86,20 @@ export const LandingDemoFeed = () => {
 
           {/* Filters */}
           <div className="flex items-center gap-3 w-full md:w-auto">
-            <Button variant="outline" className="rounded-full border-slate-200 h-12 px-6 flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-600 font-medium flex-1 md:flex-none justify-center">
-              <Filter className="w-3.5 h-3.5" /> 
-              Show All 
+            <Button
+              variant="outline"
+              className="rounded-full border-slate-200 h-12 px-6 flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-600 font-medium flex-1 md:flex-none justify-center"
+            >
+              <Filter className="w-3.5 h-3.5" />
+              Show All
               <ChevronDown className="w-3.5 h-3.5 opacity-50 ml-1" />
             </Button>
-            <Button variant="outline" className="rounded-full border-slate-200 h-12 px-6 flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-600 font-medium flex-1 md:flex-none justify-center">
-              <Clock className="w-3.5 h-3.5" /> 
-              Last 24h 
+            <Button
+              variant="outline"
+              className="rounded-full border-slate-200 h-12 px-6 flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-600 font-medium flex-1 md:flex-none justify-center"
+            >
+              <Clock className="w-3.5 h-3.5" />
+              Last 24h
               <ChevronDown className="w-3.5 h-3.5 opacity-50 ml-1" />
             </Button>
           </div>
@@ -90,7 +108,7 @@ export const LandingDemoFeed = () => {
         {/* Leads Feed */}
         <div className="space-y-6">
           {/* Card 1: High Intent */}
-          <LeadCard 
+          <LeadCard
             id="demo-1"
             intent_score={9.8}
             source_subreddit="r/SaaS"
@@ -110,7 +128,7 @@ export const LandingDemoFeed = () => {
           />
 
           {/* Card 2: Medium Intent */}
-          <LeadCard 
+          <LeadCard
             id="demo-2"
             intent_score={6.4}
             source_subreddit="r/marketing"

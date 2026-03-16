@@ -328,7 +328,7 @@ export default function LeadsPage({
             )}
           >
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-1.5">
-              <ScanLine className="w-3 h-3 text-amber-600" /> Potential
+              <ScanLine className="w-3 h-3 text-amber-600" /> Warm Leads
             </span>
             <span className="text-3xl font-mono font-bold text-amber-600 tabular-nums leading-none">
               {metrics.potential}
@@ -344,7 +344,7 @@ export default function LeadsPage({
             )}
           >
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-1.5">
-              <Signal className="w-3 h-3 text-emerald-600" /> Top Matches
+              <Signal className="w-3 h-3 text-emerald-600" /> Hot Leads
             </span>
             <span className="text-3xl font-mono font-bold text-emerald-600 tabular-nums leading-none">
               {metrics.topMatches}
