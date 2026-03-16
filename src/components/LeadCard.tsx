@@ -115,6 +115,7 @@ export const LeadCard: React.FC<LeadCardProps> = ({
   post_url = "https://reddit.com",
   noAnimation = false,
   draft = null,
+  user_feedback = null,
 }) => {
   const [isDraftVisible, setIsDraftVisible] = React.useState(false);
   const [isDrafting, setIsDrafting] = React.useState(false);
