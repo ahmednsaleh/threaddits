@@ -57,11 +57,12 @@ export default function Dashboard() {
     queryFn: async () => {
       if (!user?.id) return [];
       const { data } = await supabase
-        .from("lead_feedback")
+        .from("leads")
         .select(
-          "id, verdict, recorded_at, lead_id, leads(post_title, source_subreddit, intent_score, products(product_name))",
+          "id, user_feedback, updated_at, post_title, source_subreddit, intent_score, products(product_name)",
         )
-        .order("recorded_at", { ascending: false })
+        .not("user_feedback", "is", null)
+        .order("updated_at", { ascending: false })
         .limit(6);
       return data || [];
     },
@@ -379,9 +380,8 @@ export default function Dashboard() {
               ) : (
                 <div className="space-y-3">
                   {feedbackEvents.map((ev: any) => {
-                    const lead = ev.leads as any;
-                    const product = lead?.products as any;
-                    const isGood = ev.verdict === "relevant";
+                    const product = ev.products as any;
+                    const isGood = ev.user_feedback === "good";
                     return (
                       <div
                         key={ev.id}
@@ -403,11 +403,11 @@ export default function Dashboard() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-xs font-bold text-slate-700 truncate">
-                            {lead?.post_title || "Lead"}
+                            {ev.post_title || "Lead"}
                           </p>
                           <div className="flex items-center gap-2 mt-0.5">
                             <span className="text-[10px] text-slate-400 font-mono">
-                              r/{lead?.source_subreddit}
+                              r/{ev.source_subreddit}
                             </span>
                             {product?.product_name && (
                               <span className="text-[10px] bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded font-mono">
@@ -417,7 +417,7 @@ export default function Dashboard() {
                           </div>
                         </div>
                         <span className="text-[10px] text-slate-400 font-mono flex-shrink-0">
-                          {formatTimeAgo(ev.recorded_at)}
+                          {formatTimeAgo(ev.updated_at)}
                         </span>
                       </div>
                     );

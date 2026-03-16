@@ -124,6 +124,7 @@ export const LeadCard: React.FC<LeadCardProps> = ({
   );
   const [isStatusMenuOpen, setIsStatusMenuOpen] = React.useState(false);
   const [isDismissed, setIsDismissed] = React.useState(false);
+  const [isApproved, setIsApproved] = React.useState(user_feedback === "good");
 
   // Mutations
   const updateStatus = useUpdateLeadStatus();
@@ -225,6 +226,7 @@ export const LeadCard: React.FC<LeadCardProps> = ({
   };
 
   const handleGoodLead = () => {
+    setIsApproved(true);
     updateFeedback.mutate({ leadId: id, feedback: "good" });
     trackEvent("lead_approved", {
       lead_id: id,
@@ -306,12 +308,21 @@ export const LeadCard: React.FC<LeadCardProps> = ({
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 px-3 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-full transition-colors flex items-center gap-1.5 border border-transparent hover:border-emerald-100"
+            className={cn(
+              "h-8 px-3 rounded-full transition-colors flex items-center gap-1.5 border",
+              isApproved
+                ? "text-emerald-600 bg-emerald-50 border-emerald-100"
+                : "text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 border-transparent hover:border-emerald-100",
+            )}
             onClick={handleGoodLead}
-            disabled={updateFeedback.isPending}
+            disabled={updateFeedback.isPending || isApproved}
           >
-            <ThumbsUp className="w-3.5 h-3.5" />
-            <span className="text-xs font-medium">Good Lead</span>
+            <ThumbsUp
+              className={cn("w-3.5 h-3.5", isApproved && "fill-emerald-600")}
+            />
+            <span className="text-xs font-medium">
+              {isApproved ? "Approved" : "Good Lead"}
+            </span>
           </Button>
 
           <Button
