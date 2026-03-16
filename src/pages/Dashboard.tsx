@@ -13,8 +13,13 @@ import {
   Radar,
   Search,
   Loader2,
-  ThumbsUp,
-  ThumbsDown,
+  ArrowUp,
+  ArrowDown,
+  TrendingDown,
+  TrendingUp,
+  CheckCircle2,
+  RefreshCw,
+  PlusCircle,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 import { useProducts } from "../hooks/useProducts";
@@ -51,19 +56,29 @@ export default function Dashboard() {
       .slice(0, 5);
   }, [allLeads]);
 
-  // Fetch recent feedback events for System Evolution panel
+  // Fetch system evolution events from system_actions table
   const { data: feedbackEvents = [] } = useQuery({
-    queryKey: ["feedback-events", user?.id],
+    queryKey: ["system-evolution", user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
+      // Get user's product IDs first
+      const { data: userProducts } = await supabase
+        .from("products")
+        .select("id")
+        .eq("user_id", user.id);
+
+      if (!userProducts?.length) return [];
+      const productIds = userProducts.map((p: any) => p.id);
+
       const { data } = await supabase
-        .from("leads")
+        .from("system_actions")
         .select(
-          "id, user_feedback, updated_at, post_title, source_subreddit, intent_score, products(product_name)",
+          "id, product_id, action_type, action_details, executed_at, products(product_name)",
         )
-        .not("user_feedback", "is", null)
-        .order("updated_at", { ascending: false })
-        .limit(6);
+        .in("product_id", productIds)
+        .eq("successful", true)
+        .order("executed_at", { ascending: false })
+        .limit(10);
       return data || [];
     },
     enabled: !!user?.id,
@@ -352,7 +367,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* RIGHT: System Evolution — real feedback events */}
+          {/* RIGHT: System Evolution — real system_actions events */}
           <div className="bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col h-full">
             <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
               <div className="flex items-center gap-2">
@@ -362,7 +377,7 @@ export default function Dashboard() {
                 </h2>
               </div>
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                Feedback Log
+                Action Log
               </span>
             </div>
 
@@ -370,18 +385,58 @@ export default function Dashboard() {
               {feedbackEvents.length === 0 ? (
                 <div className="py-8 text-center space-y-2">
                   <p className="text-sm font-medium text-slate-400">
-                    No training data yet.
+                    No system events yet.
                   </p>
-                  <p className="text-xs text-slate-300 max-w-[200px] mx-auto leading-relaxed">
-                    Click "Good Lead" or "Bad Lead" on any lead card — the
-                    engine calibrates from your feedback over time.
+                  <p className="text-xs text-slate-300 max-w-[220px] mx-auto leading-relaxed">
+                    Events appear here after each crawl run — subreddit
+                    promotions, keyword retirements, and more.
                   </p>
                 </div>
               ) : (
                 <div className="space-y-3">
                   {feedbackEvents.map((ev: any) => {
                     const product = ev.products as any;
-                    const isGood = ev.user_feedback === "good";
+                    const details = (ev.action_details as any) || {};
+                    const actionType: string = ev.action_type || "";
+
+                    // Determine icon + color + label based on action_type
+                    let IconComponent = RefreshCw;
+                    let iconBg = "bg-slate-100";
+                    let iconColor = "text-slate-500";
+                    let label = actionType.replace(/_/g, " ");
+
+                    if (actionType === "subreddit_added") {
+                      IconComponent = PlusCircle;
+                      iconBg = "bg-blue-50";
+                      iconColor = "text-blue-500";
+                      label = `r/${details.subreddit || ""} added to scanning`;
+                    } else if (actionType === "subreddit_promoted") {
+                      IconComponent = ArrowUp;
+                      iconBg = "bg-emerald-50";
+                      iconColor = "text-emerald-600";
+                      label = `r/${details.subreddit || ""} promoted${details.avg_score ? ` (avg ${details.avg_score})` : ""}`;
+                    } else if (actionType === "subreddit_demoted") {
+                      IconComponent = ArrowDown;
+                      iconBg = "bg-amber-50";
+                      iconColor = "text-amber-600";
+                      label = `r/${details.subreddit || ""} moved to probation`;
+                    } else if (actionType === "keyword_retired") {
+                      IconComponent = TrendingDown;
+                      iconBg = "bg-rose-50";
+                      iconColor = "text-rose-500";
+                      label = `"${details.keyword || ""}" keyword retired`;
+                    } else if (actionType === "keyword_activated") {
+                      IconComponent = TrendingUp;
+                      iconBg = "bg-emerald-50";
+                      iconColor = "text-emerald-600";
+                      label = `"${details.keyword || ""}" keyword activated`;
+                    } else if (actionType === "crawl_complete") {
+                      IconComponent = CheckCircle2;
+                      iconBg = "bg-emerald-50";
+                      iconColor = "text-emerald-600";
+                      label = `${details.leads ?? ""} new leads from ${details.posts ?? ""} posts`;
+                    }
+
                     return (
                       <div
                         key={ev.id}
@@ -390,34 +445,29 @@ export default function Dashboard() {
                         <div
                           className={cn(
                             "mt-0.5 flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center",
-                            isGood
-                              ? "bg-emerald-100 text-emerald-600"
-                              : "bg-rose-100 text-rose-500",
+                            iconBg,
+                            iconColor,
                           )}
                         >
-                          {isGood ? (
-                            <ThumbsUp className="w-3 h-3" />
-                          ) : (
-                            <ThumbsDown className="w-3 h-3" />
-                          )}
+                          <IconComponent className="w-3 h-3" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-xs font-bold text-slate-700 truncate">
-                            {ev.post_title || "Lead"}
+                            {label}
                           </p>
                           <div className="flex items-center gap-2 mt-0.5">
-                            <span className="text-[10px] text-slate-400 font-mono">
-                              r/{ev.source_subreddit}
-                            </span>
                             {product?.product_name && (
                               <span className="text-[10px] bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded font-mono">
                                 {product.product_name}
                               </span>
                             )}
+                            <span className="text-[10px] text-slate-400 font-mono capitalize">
+                              {actionType.replace(/_/g, " ")}
+                            </span>
                           </div>
                         </div>
                         <span className="text-[10px] text-slate-400 font-mono flex-shrink-0">
-                          {formatTimeAgo(ev.updated_at)}
+                          {formatTimeAgo(ev.executed_at)}
                         </span>
                       </div>
                     );
