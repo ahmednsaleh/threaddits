@@ -280,7 +280,7 @@ export default function Dashboard() {
         </div>
 
         {/* 4. CONTEXT GRID */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start min-w-0">
           {/* LEFT: Active Products */}
           <div className="bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col">
             <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
