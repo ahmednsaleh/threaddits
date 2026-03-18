@@ -94,7 +94,7 @@ export default function LeadsPage({
   });
 
   // Fetch metrics for pipeline bar
-  const { data: metrics = { total: 0, new: 0, potential: 0, topMatches: 0 } } =
+  const { data: metrics = { total: 0, hotLeads: 0, avgScore: 0, newThisWeek: 0 } } =
     useLeadMetrics(activeProductId);
 
   // Bulk-fetch drafts for all visible leads to avoid N+1 queries
