@@ -21,37 +21,39 @@ export function useLeadMetrics(productId: string | null) {
 
       // Fetch all counts in parallel
       const [totalResult, newResult, potentialResult, topMatchesResult] = await Promise.all([
-        // Total leads
-        supabase
-          .from('leads')
-          .select('*', { count: 'exact', head: true })
-          .eq('user_id', user.id)
-          .eq('product_id', productId),
-        
-        // New leads (status = 'New')
+        // Actionable leads (score >= 7)
         supabase
           .from('leads')
           .select('*', { count: 'exact', head: true })
           .eq('user_id', user.id)
           .eq('product_id', productId)
-          .eq('status', 'New'),
+          .gte('intent_score', 7),
         
-        // Potential leads (intent_score 5-7)
+        // New leads (status = 'New', score >= 7)
         supabase
           .from('leads')
           .select('*', { count: 'exact', head: true })
           .eq('user_id', user.id)
           .eq('product_id', productId)
-          .gte('intent_score', 5)
-          .lte('intent_score', 7),
+          .eq('status', 'New')
+          .gte('intent_score', 7),
         
-        // Top matches (intent_score >= 8)
+        // Potential leads (intent_score 7-8)
         supabase
           .from('leads')
           .select('*', { count: 'exact', head: true })
           .eq('user_id', user.id)
           .eq('product_id', productId)
-          .gte('intent_score', 8),
+          .gte('intent_score', 7)
+          .lte('intent_score', 8),
+        
+        // Hot leads (intent_score >= 9)
+        supabase
+          .from('leads')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+          .eq('product_id', productId)
+          .gte('intent_score', 9),
       ]);
 
       return {

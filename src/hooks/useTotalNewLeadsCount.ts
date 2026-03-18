@@ -16,7 +16,7 @@ export function useTotalNewLeadsCount() {
         .from('leads')
         .select('*', { count: 'exact', head: true })
         .eq('user_id', user.id)
-        .eq('status', 'New');
+        .gte('intent_score', 7);
 
       if (error) {
         console.error('Error fetching new leads count:', error);
