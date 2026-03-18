@@ -419,7 +419,7 @@ export default function Dashboard() {
                       IconComponent = ArrowDown;
                       iconBg = "bg-amber-50";
                       iconColor = "text-amber-600";
-                      label = `r/${details.subreddit || ""} moved to probation`;
+                      label = `r/${details.subreddit || ""} moved to probation — avg score ${details.avg_score || "?"}/10 across ${details.total_leads || "?"} leads`;
                     } else if (actionType === "keyword_retired") {
                       IconComponent = TrendingDown;
                       iconBg = "bg-rose-50";
