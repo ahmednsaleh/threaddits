@@ -331,7 +331,7 @@ export default function LeadsPage({
               <ScanLine className="w-3 h-3 text-amber-600" /> Warm Leads
             </span>
             <span className="text-3xl font-mono font-bold text-amber-600 tabular-nums leading-none">
-              {metrics.potential}
+              {metrics.total - metrics.hotLeads}
             </span>
           </button>
           <button
