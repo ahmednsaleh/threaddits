@@ -536,6 +536,10 @@ export default function EditProductPage() {
                                <span className="flex items-center gap-1.5 text-emerald-600 text-xs font-bold font-mono">
                                   <Flame className="w-3.5 h-3.5 fill-emerald-100" /> {kw.leads_found} Leads
                                </span>
+                             ) : kw.impressions === 0 ? (
+                               <span className="flex items-center gap-1.5 text-amber-600 text-xs font-bold font-mono">
+                                  <AlertTriangle className="w-3.5 h-3.5" /> Not yet scanned
+                               </span>
                              ) : (
                                <span className="flex items-center gap-1.5 text-slate-400 text-xs font-bold font-mono">
                                   <AlertTriangle className="w-3.5 h-3.5" /> Low Signal
