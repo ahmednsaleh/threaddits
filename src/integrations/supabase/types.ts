@@ -160,6 +160,7 @@ export type Database = {
           is_synthesized: boolean | null
           last_accessed_at: string | null
           metadata: Json | null
+          project_id: string | null
           related_ids: string[] | null
           relevance_score: number | null
           source: string
@@ -186,6 +187,7 @@ export type Database = {
           is_synthesized?: boolean | null
           last_accessed_at?: string | null
           metadata?: Json | null
+          project_id?: string | null
           related_ids?: string[] | null
           relevance_score?: number | null
           source?: string
@@ -212,6 +214,7 @@ export type Database = {
           is_synthesized?: boolean | null
           last_accessed_at?: string | null
           metadata?: Json | null
+          project_id?: string | null
           related_ids?: string[] | null
           relevance_score?: number | null
           source?: string
@@ -222,7 +225,22 @@ export type Database = {
           user_id?: string | null
           user_message?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "brain_entries_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "bz_project_map"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "brain_entries_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "bz_projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       brain_relations: {
         Row: {
@@ -407,6 +425,63 @@ export type Database = {
         }
         Relationships: []
       }
+      bz_projects: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          display_name: string
+          github_path: string | null
+          id: string
+          name: string
+          priority: number | null
+          status: string
+          type: string
+          updated_at: string | null
+          venture_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          display_name: string
+          github_path?: string | null
+          id?: string
+          name: string
+          priority?: number | null
+          status?: string
+          type: string
+          updated_at?: string | null
+          venture_id: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          display_name?: string
+          github_path?: string | null
+          id?: string
+          name?: string
+          priority?: number | null
+          status?: string
+          type?: string
+          updated_at?: string | null
+          venture_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bz_projects_venture_id_fkey"
+            columns: ["venture_id"]
+            isOneToOne: false
+            referencedRelation: "bz_project_map"
+            referencedColumns: ["venture_id"]
+          },
+          {
+            foreignKeyName: "bz_projects_venture_id_fkey"
+            columns: ["venture_id"]
+            isOneToOne: false
+            referencedRelation: "bz_ventures"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bz_system_state: {
         Row: {
           bot_name: string
@@ -414,6 +489,7 @@ export type Database = {
           current_load: number | null
           dahab_commitment_backlog: number | null
           error_count: number | null
+          escalation_rate: number | null
           id: string
           last_error: string | null
           magd_draft_queue_size: number | null
@@ -428,6 +504,7 @@ export type Database = {
           current_load?: number | null
           dahab_commitment_backlog?: number | null
           error_count?: number | null
+          escalation_rate?: number | null
           id?: string
           last_error?: string | null
           magd_draft_queue_size?: number | null
@@ -442,12 +519,49 @@ export type Database = {
           current_load?: number | null
           dahab_commitment_backlog?: number | null
           error_count?: number | null
+          escalation_rate?: number | null
           id?: string
           last_error?: string | null
           magd_draft_queue_size?: number | null
           sanad_confidence_avg?: number | null
           sanad_escalation_rate?: number | null
           success_count?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      bz_ventures: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          goal: string | null
+          id: string
+          name: string
+          priority: number | null
+          status: string
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          goal?: string | null
+          id?: string
+          name: string
+          priority?: number | null
+          status?: string
+          type?: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          goal?: string | null
+          id?: string
+          name?: string
+          priority?: number | null
+          status?: string
+          type?: string
           updated_at?: string | null
         }
         Relationships: []
@@ -508,6 +622,7 @@ export type Database = {
           notified_at: string | null
           parent_commitment_id: string | null
           priority: string | null
+          project_id: string | null
           recurrence_end_date: string | null
           recurrence_pattern: string | null
           reminder_sent_at: string | null
@@ -525,6 +640,7 @@ export type Database = {
           notified_at?: string | null
           parent_commitment_id?: string | null
           priority?: string | null
+          project_id?: string | null
           recurrence_end_date?: string | null
           recurrence_pattern?: string | null
           reminder_sent_at?: string | null
@@ -542,6 +658,7 @@ export type Database = {
           notified_at?: string | null
           parent_commitment_id?: string | null
           priority?: string | null
+          project_id?: string | null
           recurrence_end_date?: string | null
           recurrence_pattern?: string | null
           reminder_sent_at?: string | null
@@ -569,6 +686,20 @@ export type Database = {
             columns: ["parent_commitment_id"]
             isOneToOne: false
             referencedRelation: "open_commitments_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "commitments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "bz_project_map"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "commitments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "bz_projects"
             referencedColumns: ["id"]
           },
         ]
@@ -1180,6 +1311,7 @@ export type Database = {
           linkedin_text: string | null
           linkedin_url: string | null
           milestone: string | null
+          platform: string | null
           post_at: string | null
           source_ref: string | null
           status: string | null
@@ -1197,6 +1329,7 @@ export type Database = {
           linkedin_text?: string | null
           linkedin_url?: string | null
           milestone?: string | null
+          platform?: string | null
           post_at?: string | null
           source_ref?: string | null
           status?: string | null
@@ -1214,6 +1347,7 @@ export type Database = {
           linkedin_text?: string | null
           linkedin_url?: string | null
           milestone?: string | null
+          platform?: string | null
           post_at?: string | null
           source_ref?: string | null
           status?: string | null
@@ -1577,6 +1711,129 @@ export type Database = {
         }
         Relationships: []
       }
+      reddit_api_log: {
+        Row: {
+          caller: string
+          granted: boolean
+          id: number
+          logged_at: string
+          remaining_hour: number
+          remaining_minute: number
+          requests_asked: number
+          requests_granted: number
+        }
+        Insert: {
+          caller: string
+          granted: boolean
+          id?: number
+          logged_at?: string
+          remaining_hour: number
+          remaining_minute: number
+          requests_asked?: number
+          requests_granted?: number
+        }
+        Update: {
+          caller?: string
+          granted?: boolean
+          id?: number
+          logged_at?: string
+          remaining_hour?: number
+          remaining_minute?: number
+          requests_asked?: number
+          requests_granted?: number
+        }
+        Relationships: []
+      }
+      reddit_api_state: {
+        Row: {
+          hour_count: number
+          hour_window: string
+          id: number
+          minute_count: number
+          minute_window: string
+          updated_at: string
+        }
+        Insert: {
+          hour_count?: number
+          hour_window?: string
+          id?: number
+          minute_count?: number
+          minute_window?: string
+          updated_at?: string
+        }
+        Update: {
+          hour_count?: number
+          hour_window?: string
+          id?: number
+          minute_count?: number
+          minute_window?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      reddit_subreddit_pool: {
+        Row: {
+          active: boolean
+          avg_intent: number | null
+          bad_weeks: number
+          created_at: string
+          discovered_from: string | null
+          engagement_score: number | null
+          freshness_score: number | null
+          noise_score: number | null
+          posts_per_day: number | null
+          qualification_score: number | null
+          qualified_at: string | null
+          scan_interval_hours: number | null
+          scan_limit: number | null
+          status: string
+          subreddit: string
+          subscriber_count: number | null
+          tier: number | null
+          wtp_score: number | null
+        }
+        Insert: {
+          active?: boolean
+          avg_intent?: number | null
+          bad_weeks?: number
+          created_at?: string
+          discovered_from?: string | null
+          engagement_score?: number | null
+          freshness_score?: number | null
+          noise_score?: number | null
+          posts_per_day?: number | null
+          qualification_score?: number | null
+          qualified_at?: string | null
+          scan_interval_hours?: number | null
+          scan_limit?: number | null
+          status?: string
+          subreddit: string
+          subscriber_count?: number | null
+          tier?: number | null
+          wtp_score?: number | null
+        }
+        Update: {
+          active?: boolean
+          avg_intent?: number | null
+          bad_weeks?: number
+          created_at?: string
+          discovered_from?: string | null
+          engagement_score?: number | null
+          freshness_score?: number | null
+          noise_score?: number | null
+          posts_per_day?: number | null
+          qualification_score?: number | null
+          qualified_at?: string | null
+          scan_interval_hours?: number | null
+          scan_limit?: number | null
+          status?: string
+          subreddit?: string
+          subscriber_count?: number | null
+          tier?: number | null
+          wtp_score?: number | null
+        }
+        Relationships: []
+      }
       reminders: {
         Row: {
           chat_id: number
@@ -1609,10 +1866,15 @@ export type Database = {
           approval_notes: string | null
           approved_at: string | null
           created_at: string | null
+          demand_confidence: string
           description: string | null
+          embedding: Json | null
+          first_seen_at: string | null
           id: string
+          independent_signals: number
           is_approved: boolean | null
-          last_validated_at: string | null
+          is_stale: boolean
+          last_seen_at: string | null
           pain_score: number
           source: string | null
           sources_seen: Json | null
@@ -1623,10 +1885,15 @@ export type Database = {
           approval_notes?: string | null
           approved_at?: string | null
           created_at?: string | null
+          demand_confidence?: string
           description?: string | null
+          embedding?: Json | null
+          first_seen_at?: string | null
           id?: string
+          independent_signals?: number
           is_approved?: boolean | null
-          last_validated_at?: string | null
+          is_stale?: boolean
+          last_seen_at?: string | null
           pain_score?: number
           source?: string | null
           sources_seen?: Json | null
@@ -1637,10 +1904,15 @@ export type Database = {
           approval_notes?: string | null
           approved_at?: string | null
           created_at?: string | null
+          demand_confidence?: string
           description?: string | null
+          embedding?: Json | null
+          first_seen_at?: string | null
           id?: string
+          independent_signals?: number
           is_approved?: boolean | null
-          last_validated_at?: string | null
+          is_stale?: boolean
+          last_seen_at?: string | null
           pain_score?: number
           source?: string | null
           sources_seen?: Json | null
@@ -1705,6 +1977,47 @@ export type Database = {
           wtp_evidence?: string | null
         }
         Relationships: []
+      }
+      rizq_signal_history: {
+        Row: {
+          created_at: string
+          id: string
+          idea_id: string
+          is_independent: boolean
+          signal_date: string
+          source: string
+          source_url: string | null
+          subreddit: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          idea_id: string
+          is_independent?: boolean
+          signal_date?: string
+          source: string
+          source_url?: string | null
+          subreddit?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          idea_id?: string
+          is_independent?: boolean
+          signal_date?: string
+          source?: string
+          source_url?: string | null
+          subreddit?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rizq_signal_history_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "rizq_ideas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       rizq_v3_evidence: {
         Row: {
@@ -1960,6 +2273,48 @@ export type Database = {
         }
         Relationships: []
       }
+      system_actions: {
+        Row: {
+          action_details: Json | null
+          action_type: string
+          executed_at: string | null
+          id: string
+          product_id: string | null
+          successful: boolean | null
+        }
+        Insert: {
+          action_details?: Json | null
+          action_type: string
+          executed_at?: string | null
+          id?: string
+          product_id?: string | null
+          successful?: boolean | null
+        }
+        Update: {
+          action_details?: Json | null
+          action_type?: string
+          executed_at?: string | null
+          id?: string
+          product_id?: string | null
+          successful?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "system_actions_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "n8n_products_view"
+            referencedColumns: ["product_id"]
+          },
+          {
+            foreignKeyName: "system_actions_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       task_patterns: {
         Row: {
           average_duration_hours: number | null
@@ -2052,6 +2407,7 @@ export type Database = {
           last_commit_hash: string | null
           name: string
           notes: string | null
+          project_id: string | null
           req_id: string | null
           status: string
           updated_at: string | null
@@ -2064,6 +2420,7 @@ export type Database = {
           last_commit_hash?: string | null
           name: string
           notes?: string | null
+          project_id?: string | null
           req_id?: string | null
           status?: string
           updated_at?: string | null
@@ -2076,11 +2433,27 @@ export type Database = {
           last_commit_hash?: string | null
           name?: string
           notes?: string | null
+          project_id?: string | null
           req_id?: string | null
           status?: string
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "bz_project_map"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "bz_projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       telegram_health_log: {
         Row: {
@@ -2198,6 +2571,23 @@ export type Database = {
       }
     }
     Views: {
+      bz_project_map: {
+        Row: {
+          description: string | null
+          display_name: string | null
+          github_path: string | null
+          priority: number | null
+          project: string | null
+          project_id: string | null
+          project_status: string | null
+          project_type: string | null
+          venture: string | null
+          venture_id: string | null
+          venture_status: string | null
+          venture_type: string | null
+        }
+        Relationships: []
+      }
       n8n_products_view: {
         Row: {
           business_type: string | null
@@ -2274,6 +2664,19 @@ export type Database = {
       }
     }
     Functions: {
+      acquire_reddit_budget: {
+        Args: {
+          p_caller: string
+          p_requests?: number
+          p_rph_cap?: number
+          p_rpm_cap?: number
+        }
+        Returns: {
+          granted: boolean
+          remaining_hour: number
+          remaining_minute: number
+        }[]
+      }
       cleanup_all_caches: {
         Args: never
         Returns: {
