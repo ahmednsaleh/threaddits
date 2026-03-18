@@ -158,7 +158,7 @@ export default function Dashboard() {
                 {isLoading ? "..." : `${qualityDensity}%`}
               </span>
               <span className="text-[10px] font-medium text-slate-400 font-mono">
-                Signal Ratio
+                Score 9+ / Total Shown
               </span>
             </div>
           </div>
