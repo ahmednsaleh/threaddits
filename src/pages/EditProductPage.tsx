@@ -594,7 +594,7 @@ export default function EditProductPage() {
 
                   <div className="flex items-center justify-between text-sm mt-8 border-t border-slate-800 pt-4">
                     <span className="text-slate-400">High Intent</span>
-                    <span className="font-bold text-emerald-400 font-mono">{metrics?.topMatches || 0}</span>
+                    <span className="font-bold text-emerald-400 font-mono">{metrics?.hotLeads || 0}</span>
                   </div>
                </div>
             </div>

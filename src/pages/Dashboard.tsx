@@ -40,7 +40,7 @@ export default function Dashboard() {
   const primaryProductId = primaryProduct?.id || null;
 
   // Fetch lead metrics for the primary product
-  const { data: metrics = { total: 0, new: 0, potential: 0, topMatches: 0 } } =
+  const { data: metrics = { total: 0, hotLeads: 0, avgScore: 0, newThisWeek: 0 } } =
     useLeadMetrics(primaryProductId);
 
   // Fetch top 5 leads sorted by intent_score
@@ -83,12 +83,6 @@ export default function Dashboard() {
     },
     enabled: !!user?.id,
   });
-
-  // Calculate quality density (high intent / total)
-  const qualityDensity =
-    metrics.total > 0
-      ? Math.round((metrics.topMatches / metrics.total) * 100)
-      : 0;
 
   const isLoading = isLoadingProducts || isLoadingLeads;
 
@@ -134,13 +128,16 @@ export default function Dashboard() {
           <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex flex-col justify-between h-28">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
-                Hot Leads (9+)
+                Hot Leads
               </span>
               <Target className="w-4 h-4 text-[#C2410C]" />
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-3xl font-bold font-mono text-[#2C3E50] tracking-tighter leading-none">
-                {isLoading ? "..." : metrics.topMatches}
+                {isLoading ? "..." : metrics.hotLeads}
+              </span>
+              <span className="text-[10px] font-medium text-slate-400 font-mono">
+                Score 9+
               </span>
             </div>
           </div>
@@ -149,16 +146,16 @@ export default function Dashboard() {
           <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex flex-col justify-between h-28">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
-                Hot Lead Rate
+                Avg Score
               </span>
               <Activity className="w-4 h-4 text-slate-300" />
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-3xl font-bold font-mono text-[#2C3E50] tracking-tighter leading-none">
-                {isLoading ? "..." : `${qualityDensity}%`}
+                {isLoading ? "..." : `${metrics.avgScore.toFixed(1)}/10`}
               </span>
               <span className="text-[10px] font-medium text-slate-400 font-mono">
-                Score 9+ / Total Shown
+                Lead Quality
               </span>
             </div>
           </div>
@@ -167,16 +164,16 @@ export default function Dashboard() {
           <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex flex-col justify-between h-28">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
-                New Leads
+                New This Week
               </span>
               <Radar className="w-4 h-4 text-slate-300" />
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-3xl font-bold font-mono text-[#2C3E50] tracking-tighter leading-none">
-                {isLoading ? "..." : metrics.new}
+                {isLoading ? "..." : metrics.newThisWeek}
               </span>
               <span className="text-[10px] font-medium text-slate-400 font-mono">
-                Unreviewed
+                Last 7 days
               </span>
             </div>
           </div>

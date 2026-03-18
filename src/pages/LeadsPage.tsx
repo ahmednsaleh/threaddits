@@ -94,7 +94,7 @@ export default function LeadsPage({
   });
 
   // Fetch metrics for pipeline bar
-  const { data: metrics = { total: 0, new: 0, potential: 0, topMatches: 0 } } =
+  const { data: metrics = { total: 0, hotLeads: 0, avgScore: 0, newThisWeek: 0 } } =
     useLeadMetrics(activeProductId);
 
   // Bulk-fetch drafts for all visible leads to avoid N+1 queries
@@ -315,7 +315,7 @@ export default function LeadsPage({
               <Zap className="w-3 h-3 text-[#C2410C] fill-[#C2410C]" /> New
             </span>
             <span className="text-3xl font-mono font-bold text-slate-900 tabular-nums leading-none">
-              {metrics.new}
+              {metrics.newThisWeek}
             </span>
           </button>
           <button
@@ -331,7 +331,7 @@ export default function LeadsPage({
               <ScanLine className="w-3 h-3 text-amber-600" /> Warm Leads
             </span>
             <span className="text-3xl font-mono font-bold text-amber-600 tabular-nums leading-none">
-              {metrics.potential}
+              {metrics.total - metrics.hotLeads}
             </span>
           </button>
           <button
@@ -347,7 +347,7 @@ export default function LeadsPage({
               <Signal className="w-3 h-3 text-emerald-600" /> Hot Leads
             </span>
             <span className="text-3xl font-mono font-bold text-emerald-600 tabular-nums leading-none">
-              {metrics.topMatches}
+              {metrics.hotLeads}
             </span>
           </button>
         </div>

@@ -4,9 +4,9 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export interface LeadMetrics {
   total: number;
-  new: number;
-  potential: number;
-  topMatches: number;
+  hotLeads: number;
+  avgScore: number;
+  newThisWeek: number;
 }
 
 export function useLeadMetrics(productId: string | null) {
@@ -16,51 +16,52 @@ export function useLeadMetrics(productId: string | null) {
     queryKey: ['lead-metrics', user?.id, productId],
     queryFn: async (): Promise<LeadMetrics> => {
       if (!user?.id || !productId) {
-        return { total: 0, new: 0, potential: 0, topMatches: 0 };
+        return { total: 0, hotLeads: 0, avgScore: 0, newThisWeek: 0 };
       }
 
-      // Fetch all counts in parallel
-      const [totalResult, newResult, potentialResult, topMatchesResult] = await Promise.all([
-        // Actionable leads (score >= 7)
+      const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+
+      const [totalResult, hotLeadsResult, scoresResult, newThisWeekResult] = await Promise.all([
         supabase
           .from('leads')
           .select('*', { count: 'exact', head: true })
           .eq('user_id', user.id)
           .eq('product_id', productId)
           .gte('intent_score', 7),
-        
-        // New leads (status = 'New', score >= 7)
-        supabase
-          .from('leads')
-          .select('*', { count: 'exact', head: true })
-          .eq('user_id', user.id)
-          .eq('product_id', productId)
-          .eq('status', 'New')
-          .gte('intent_score', 7),
-        
-        // Potential leads (intent_score 7-8)
-        supabase
-          .from('leads')
-          .select('*', { count: 'exact', head: true })
-          .eq('user_id', user.id)
-          .eq('product_id', productId)
-          .gte('intent_score', 7)
-          .lte('intent_score', 8),
-        
-        // Hot leads (intent_score >= 9)
+
         supabase
           .from('leads')
           .select('*', { count: 'exact', head: true })
           .eq('user_id', user.id)
           .eq('product_id', productId)
           .gte('intent_score', 9),
+
+        supabase
+          .from('leads')
+          .select('intent_score')
+          .eq('user_id', user.id)
+          .eq('product_id', productId)
+          .gte('intent_score', 7),
+
+        supabase
+          .from('leads')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+          .eq('product_id', productId)
+          .gte('intent_score', 7)
+          .gte('created_at', oneWeekAgo),
       ]);
+
+      const scores = scoresResult.data ?? [];
+      const avgScore = scores.length > 0
+        ? scores.reduce((sum, row) => sum + row.intent_score, 0) / scores.length
+        : 0;
 
       return {
         total: totalResult.count ?? 0,
-        new: newResult.count ?? 0,
-        potential: potentialResult.count ?? 0,
-        topMatches: topMatchesResult.count ?? 0,
+        hotLeads: hotLeadsResult.count ?? 0,
+        avgScore,
+        newThisWeek: newThisWeekResult.count ?? 0,
       };
     },
     enabled: !!user?.id && !!productId,
