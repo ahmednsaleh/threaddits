@@ -84,12 +84,6 @@ export default function Dashboard() {
     enabled: !!user?.id,
   });
 
-  // Calculate quality density (high intent / total)
-  const qualityDensity =
-    metrics.total > 0
-      ? Math.round((metrics.topMatches / metrics.total) * 100)
-      : 0;
-
   const isLoading = isLoadingProducts || isLoadingLeads;
 
   return (
