@@ -128,13 +128,16 @@ export default function Dashboard() {
           <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex flex-col justify-between h-28">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
-                Hot Leads (9+)
+                Hot Leads
               </span>
               <Target className="w-4 h-4 text-[#C2410C]" />
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-3xl font-bold font-mono text-[#2C3E50] tracking-tighter leading-none">
-                {isLoading ? "..." : metrics.topMatches}
+                {isLoading ? "..." : metrics.hotLeads}
+              </span>
+              <span className="text-[10px] font-medium text-slate-400 font-mono">
+                Score 9+
               </span>
             </div>
           </div>
@@ -143,16 +146,16 @@ export default function Dashboard() {
           <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex flex-col justify-between h-28">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
-                Hot Lead Rate
+                Avg Score
               </span>
               <Activity className="w-4 h-4 text-slate-300" />
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-3xl font-bold font-mono text-[#2C3E50] tracking-tighter leading-none">
-                {isLoading ? "..." : `${qualityDensity}%`}
+                {isLoading ? "..." : `${metrics.avgScore.toFixed(1)}/10`}
               </span>
               <span className="text-[10px] font-medium text-slate-400 font-mono">
-                Score 9+ / Total Shown
+                Lead Quality
               </span>
             </div>
           </div>
@@ -161,16 +164,16 @@ export default function Dashboard() {
           <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex flex-col justify-between h-28">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
-                New Leads
+                New This Week
               </span>
               <Radar className="w-4 h-4 text-slate-300" />
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-3xl font-bold font-mono text-[#2C3E50] tracking-tighter leading-none">
-                {isLoading ? "..." : metrics.new}
+                {isLoading ? "..." : metrics.newThisWeek}
               </span>
               <span className="text-[10px] font-medium text-slate-400 font-mono">
-                Unreviewed
+                Last 7 days
               </span>
             </div>
           </div>
