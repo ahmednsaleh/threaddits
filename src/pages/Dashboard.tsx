@@ -70,7 +70,7 @@ export default function Dashboard() {
       if (!userProducts?.length) return [];
       const productIds = userProducts.map((p: any) => p.id);
 
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from("system_actions")
         .select(
           "id, product_id, action_type, action_details, executed_at, products(product_name)",
