@@ -347,7 +347,7 @@ export default function LeadsPage({
               <Signal className="w-3 h-3 text-emerald-600" /> Hot Leads
             </span>
             <span className="text-3xl font-mono font-bold text-emerald-600 tabular-nums leading-none">
-              {metrics.topMatches}
+              {metrics.hotLeads}
             </span>
           </button>
         </div>
