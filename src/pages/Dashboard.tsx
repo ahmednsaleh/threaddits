@@ -93,7 +93,7 @@ export default function Dashboard() {
   const isLoading = isLoadingProducts || isLoadingLeads;
 
   return (
-    <main className="flex-1 p-4 md:p-10 overflow-y-auto bg-[#FAFAFA] min-h-screen">
+    <main className="flex-1 p-4 md:p-10 overflow-y-auto overflow-x-hidden bg-[#FAFAFA] min-h-screen">
       <div className="mx-auto w-full max-w-6xl space-y-8 pb-20">
         {/* 1. HEADER */}
         <div className="flex flex-col gap-1">
