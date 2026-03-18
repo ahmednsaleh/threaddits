@@ -315,7 +315,7 @@ export default function LeadsPage({
               <Zap className="w-3 h-3 text-[#C2410C] fill-[#C2410C]" /> New
             </span>
             <span className="text-3xl font-mono font-bold text-slate-900 tabular-nums leading-none">
-              {metrics.new}
+              {metrics.newThisWeek}
             </span>
           </button>
           <button
