@@ -134,7 +134,7 @@ export default function Dashboard() {
           <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex flex-col justify-between h-28">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
-                High Intent (9+)
+                Hot Leads (9+)
               </span>
               <Target className="w-4 h-4 text-[#C2410C]" />
             </div>
