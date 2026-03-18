@@ -70,7 +70,7 @@ export default function Dashboard() {
       if (!userProducts?.length) return [];
       const productIds = userProducts.map((p: any) => p.id);
 
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from("system_actions")
         .select(
           "id, product_id, action_type, action_details, executed_at, products(product_name)",
@@ -93,7 +93,7 @@ export default function Dashboard() {
   const isLoading = isLoadingProducts || isLoadingLeads;
 
   return (
-    <main className="flex-1 p-4 md:p-10 overflow-y-auto bg-[#FAFAFA] min-h-screen">
+    <main className="flex-1 p-4 md:p-10 overflow-y-auto overflow-x-hidden bg-[#FAFAFA] min-h-screen">
       <div className="mx-auto w-full max-w-6xl space-y-8 pb-20">
         {/* 1. HEADER */}
         <div className="flex flex-col gap-1">
@@ -119,7 +119,7 @@ export default function Dashboard() {
           <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex flex-col justify-between h-28">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
-                Total Leads
+                Actionable Leads
               </span>
               <Zap className="w-4 h-4 text-slate-300" />
             </div>
@@ -134,7 +134,7 @@ export default function Dashboard() {
           <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex flex-col justify-between h-28">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
-                High Intent (9+)
+                Hot Leads (9+)
               </span>
               <Target className="w-4 h-4 text-[#C2410C]" />
             </div>
@@ -149,7 +149,7 @@ export default function Dashboard() {
           <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex flex-col justify-between h-28">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
-                Quality Density
+                Hot Lead Rate
               </span>
               <Activity className="w-4 h-4 text-slate-300" />
             </div>
@@ -158,7 +158,7 @@ export default function Dashboard() {
                 {isLoading ? "..." : `${qualityDensity}%`}
               </span>
               <span className="text-[10px] font-medium text-slate-400 font-mono">
-                Signal Ratio
+                Score 9+ / Total Shown
               </span>
             </div>
           </div>
@@ -280,7 +280,7 @@ export default function Dashboard() {
         </div>
 
         {/* 4. CONTEXT GRID */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start min-w-0">
           {/* LEFT: Active Products */}
           <div className="bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col">
             <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
@@ -419,7 +419,7 @@ export default function Dashboard() {
                       IconComponent = ArrowDown;
                       iconBg = "bg-amber-50";
                       iconColor = "text-amber-600";
-                      label = `r/${details.subreddit || ""} moved to probation`;
+                      label = `r/${details.subreddit || ""} moved to probation — avg score ${details.avg_score || "?"}/10 across ${details.total_leads || "?"} leads`;
                     } else if (actionType === "keyword_retired") {
                       IconComponent = TrendingDown;
                       iconBg = "bg-rose-50";
