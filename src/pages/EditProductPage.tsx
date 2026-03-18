@@ -502,6 +502,7 @@ export default function EditProductPage() {
                     </button>
                 </div>
               </div>
+              <p className="text-xs text-slate-400 mt-1 font-medium">Keywords with 0 impressions haven't been included in any crawl run yet.</p>
 
               {/* Keyword Table */}
               {isLoadingKeywords ? (
