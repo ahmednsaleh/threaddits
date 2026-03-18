@@ -40,7 +40,7 @@ export default function Dashboard() {
   const primaryProductId = primaryProduct?.id || null;
 
   // Fetch lead metrics for the primary product
-  const { data: metrics = { total: 0, new: 0, potential: 0, topMatches: 0 } } =
+  const { data: metrics = { total: 0, hotLeads: 0, avgScore: 0, newThisWeek: 0 } } =
     useLeadMetrics(primaryProductId);
 
   // Fetch top 5 leads sorted by intent_score
