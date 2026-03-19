@@ -5,13 +5,16 @@ import { toast } from 'sonner';
 
 export function useUpdateLeadStatus() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   return useMutation({
     mutationFn: async ({ leadId, status }: { leadId: string; status: string }) => {
+      if (!user?.id) throw new Error('Not authenticated');
       const { error } = await supabase
         .from('leads')
         .update({ status, updated_at: new Date().toISOString() })
-        .eq('id', leadId);
+        .eq('id', leadId)
+        .eq('user_id', user.id);
 
       if (error) throw error;
     },
