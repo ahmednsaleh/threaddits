@@ -176,10 +176,12 @@ export default function EditProductPage() {
   };
 
   const removeSubreddit = async (subId: string) => {
+    if (!id) return;
     const { error } = await supabase
       .from('product_subreddit_status')
       .delete()
-      .eq('id', subId);
+      .eq('id', subId)
+      .eq('product_id', id);
 
     if (error) {
       toast.error('Failed to remove subreddit', { description: error.message });
