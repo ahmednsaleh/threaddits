@@ -228,6 +228,7 @@ const EmptySlot: React.FC<{ isLocked: boolean; onAction: () => void }> = ({
 export default function ProductsPage() {
   const { data: products = [], isLoading } = useProducts();
   const { data: userProfile } = useUserProfile();
+  const { user } = useAuth();
   const toggleStatus = useToggleProductStatus();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
