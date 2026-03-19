@@ -127,6 +127,7 @@ export function useProductKeywords(productId: string | undefined) {
 
 export function useUpdateProduct() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   return useMutation({
     mutationFn: async ({
@@ -136,10 +137,12 @@ export function useUpdateProduct() {
       productId: string;
       updates: Record<string, any>;
     }) => {
+      if (!user?.id) throw new Error('Not authenticated');
       const { error } = await supabase
         .from("products")
         .update({ ...updates, updated_at: new Date().toISOString() })
-        .eq("id", productId);
+        .eq("id", productId)
+        .eq("user_id", user.id);
 
       if (error) throw error;
     },
