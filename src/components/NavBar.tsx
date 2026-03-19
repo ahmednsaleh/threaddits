@@ -25,6 +25,12 @@ export const NavBar = () => {
 
         {/* Right: Actions */}
         <div className="flex items-center gap-8">
+          <span
+            onClick={() => handleNavigation('/blog')}
+            className="text-slate-600 hover:text-[#C2410C] font-medium transition-colors cursor-pointer text-base"
+          >
+            Blog
+          </span>
           {!loading && (
             user ? (
               <Button 

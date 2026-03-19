@@ -70,6 +70,14 @@ export const FooterSection = () => {
               </li>
               <li>
                 <a
+                  href="/blog"
+                  className="text-slate-300 hover:text-[#C2410C] transition-colors"
+                >
+                  Blog
+                </a>
+              </li>
+              <li>
+                <a
                   href="/auth"
                   className="text-slate-300 hover:text-[#C2410C] transition-colors"
                 >
