@@ -1884,8 +1884,15 @@ export type Database = {
       }
       rizq_ideas: {
         Row: {
+          addressability_rationale: string | null
+          addressability_score: number | null
           approval_notes: string | null
           approved_at: string | null
+          buyer_intent_keywords: Json | null
+          competitor_checked_at: string | null
+          competitor_count: number | null
+          competitor_exits_exist: boolean | null
+          competitor_revenue_signals: Json | null
           created_at: string | null
           demand_confidence: string
           description: string | null
@@ -1897,14 +1904,27 @@ export type Database = {
           is_stale: boolean
           last_seen_at: string | null
           pain_score: number
+          playbook_generated_at: string | null
+          playbook_text: string | null
           source: string | null
           sources_seen: Json | null
           title: string
+          trend_checked_at: string | null
+          trend_direction: string | null
+          trend_score: number | null
           validation_count: number
+          validation_score: number | null
         }
         Insert: {
+          addressability_rationale?: string | null
+          addressability_score?: number | null
           approval_notes?: string | null
           approved_at?: string | null
+          buyer_intent_keywords?: Json | null
+          competitor_checked_at?: string | null
+          competitor_count?: number | null
+          competitor_exits_exist?: boolean | null
+          competitor_revenue_signals?: Json | null
           created_at?: string | null
           demand_confidence?: string
           description?: string | null
@@ -1916,14 +1936,27 @@ export type Database = {
           is_stale?: boolean
           last_seen_at?: string | null
           pain_score?: number
+          playbook_generated_at?: string | null
+          playbook_text?: string | null
           source?: string | null
           sources_seen?: Json | null
           title: string
+          trend_checked_at?: string | null
+          trend_direction?: string | null
+          trend_score?: number | null
           validation_count?: number
+          validation_score?: number | null
         }
         Update: {
+          addressability_rationale?: string | null
+          addressability_score?: number | null
           approval_notes?: string | null
           approved_at?: string | null
+          buyer_intent_keywords?: Json | null
+          competitor_checked_at?: string | null
+          competitor_count?: number | null
+          competitor_exits_exist?: boolean | null
+          competitor_revenue_signals?: Json | null
           created_at?: string | null
           demand_confidence?: string
           description?: string | null
@@ -1935,10 +1968,16 @@ export type Database = {
           is_stale?: boolean
           last_seen_at?: string | null
           pain_score?: number
+          playbook_generated_at?: string | null
+          playbook_text?: string | null
           source?: string | null
           sources_seen?: Json | null
           title?: string
+          trend_checked_at?: string | null
+          trend_direction?: string | null
+          trend_score?: number | null
           validation_count?: number
+          validation_score?: number | null
         }
         Relationships: []
       }
