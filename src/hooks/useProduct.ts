@@ -159,6 +159,7 @@ export function useUpdateProduct() {
 
 export function useToggleProductStatus() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   return useMutation({
     mutationFn: async ({
@@ -168,10 +169,12 @@ export function useToggleProductStatus() {
       productId: string;
       newStatus: string;
     }) => {
+      if (!user?.id) throw new Error('Not authenticated');
       const { error } = await supabase
         .from("products")
         .update({ status: newStatus, updated_at: new Date().toISOString() })
-        .eq("id", productId);
+        .eq("id", productId)
+        .eq("user_id", user.id);
 
       if (error) throw error;
     },
