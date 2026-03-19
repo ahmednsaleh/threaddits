@@ -176,10 +176,12 @@ export default function EditProductPage() {
   };
 
   const removeSubreddit = async (subId: string) => {
+    if (!id) return;
     const { error } = await supabase
       .from('product_subreddit_status')
       .delete()
-      .eq('id', subId);
+      .eq('id', subId)
+      .eq('product_id', id);
 
     if (error) {
       toast.error('Failed to remove subreddit', { description: error.message });
@@ -207,10 +209,12 @@ export default function EditProductPage() {
   };
 
   const removeKeyword = async (kwId: string) => {
+    if (!id) return;
     const { error } = await supabase
       .from('keyword_performance')
       .delete()
-      .eq('id', kwId);
+      .eq('id', kwId)
+      .eq('product_id', id);
 
     if (error) {
       toast.error('Failed to remove keyword', { description: error.message });

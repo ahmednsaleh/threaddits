@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
 import {
   Plus,
   Lock,
@@ -227,6 +228,7 @@ const EmptySlot: React.FC<{ isLocked: boolean; onAction: () => void }> = ({
 export default function ProductsPage() {
   const { data: products = [], isLoading } = useProducts();
   const { data: userProfile } = useUserProfile();
+  const { user } = useAuth();
   const toggleStatus = useToggleProductStatus();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
@@ -252,12 +254,13 @@ export default function ProductsPage() {
       `Delete "${product.product_name}"?\n\nThis will permanently delete the product and all associated leads.\n\nThis cannot be undone.`,
     );
 
-    if (confirmed) {
+    if (confirmed && user?.id) {
       // Delete the product (cascade will delete leads)
       supabase
         .from("products")
         .delete()
         .eq("id", id)
+        .eq("user_id", user.id)
         .then(({ error }) => {
           if (error) {
             toast.error("Failed to delete product", {

@@ -1,16 +1,20 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 export function useUpdateLeadStatus() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   return useMutation({
     mutationFn: async ({ leadId, status }: { leadId: string; status: string }) => {
+      if (!user?.id) throw new Error('Not authenticated');
       const { error } = await supabase
         .from('leads')
         .update({ status, updated_at: new Date().toISOString() })
-        .eq('id', leadId);
+        .eq('id', leadId)
+        .eq('user_id', user.id);
 
       if (error) throw error;
     },
@@ -27,9 +31,11 @@ export function useUpdateLeadStatus() {
 
 export function useUpdateLeadFeedback() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   return useMutation({
     mutationFn: async ({ leadId, feedback, postUrl, productId }: { leadId: string; feedback: 'good' | 'bad'; postUrl?: string; productId?: string }) => {
+      if (!user?.id) throw new Error('Not authenticated');
       const { error } = await supabase
         .from('leads')
         .update({
@@ -38,7 +44,8 @@ export function useUpdateLeadFeedback() {
           // If bad lead, also mark as rejected
           ...(feedback === 'bad' ? { status: 'Rejected' } : {})
         })
-        .eq('id', leadId);
+        .eq('id', leadId)
+        .eq('user_id', user.id);
 
       if (error) throw error;
 
