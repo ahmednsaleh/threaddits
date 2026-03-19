@@ -533,6 +533,7 @@ export type Database = {
       bz_ventures: {
         Row: {
           created_at: string | null
+          current_objective: string | null
           description: string | null
           goal: string | null
           id: string
@@ -544,6 +545,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          current_objective?: string | null
           description?: string | null
           goal?: string | null
           id?: string
@@ -555,6 +557,7 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          current_objective?: string | null
           description?: string | null
           goal?: string | null
           id?: string
@@ -1858,6 +1861,24 @@ export type Database = {
           message?: string
           remind_at?: string
           sent?: boolean
+        }
+        Relationships: []
+      }
+      rizq_health_snapshot: {
+        Row: {
+          created_at: string | null
+          metrics: Json
+          snapshot_date: string
+        }
+        Insert: {
+          created_at?: string | null
+          metrics: Json
+          snapshot_date: string
+        }
+        Update: {
+          created_at?: string | null
+          metrics?: Json
+          snapshot_date?: string
         }
         Relationships: []
       }
