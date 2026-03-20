@@ -40,8 +40,9 @@ export default function Dashboard() {
   const primaryProductId = primaryProduct?.id || null;
 
   // Fetch lead metrics for the primary product
-  const { data: metrics = { total: 0, hotLeads: 0, avgScore: 0, newThisWeek: 0 } } =
-    useLeadMetrics(primaryProductId);
+  const {
+    data: metrics = { total: 0, hotLeads: 0, avgScore: 0, newThisWeek: 0 },
+  } = useLeadMetrics(primaryProductId);
 
   // Fetch top 5 leads sorted by intent_score
   const { data: allLeads = [], isLoading: isLoadingLeads } = useLeads({
@@ -370,7 +371,7 @@ export default function Dashboard() {
               <div className="flex items-center gap-2">
                 <BrainCircuit className="w-4 h-4 text-[#C2410C]" />
                 <h2 className="text-base font-bold text-[#2C3E50]">
-                  System Evolution
+                  Product Evolution
                 </h2>
               </div>
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
