@@ -24,11 +24,13 @@ export const LandingHero: React.FC<LandingHeroProps> = ({ onStartHunting }) => {
           </div>
 
           <h1 className="text-6xl md:text-8xl font-bold tracking-tight text-[#2C3E50] leading-[0.9]">
-            Find buyers already asking for your product.
+            Turn<br />
+            <span className="text-[#C2410C]">Reddit</span> conversations<br />
+            into customers.
           </h1>
           
           <p className="text-xl md:text-2xl text-slate-500 max-w-2xl mx-auto leading-relaxed font-medium">
-            Paste your URL. Threaddits learns your product, monitors <span className="text-[#C2410C] font-bold">Reddit</span> every 2 hours, and filters out the noise — so you only see leads ready to buy.
+            Paste your URL. Get high-intent buyers in seconds.
           </p>
 
           <div className="pt-10 w-full flex flex-col items-center justify-center">
@@ -36,7 +38,7 @@ export const LandingHero: React.FC<LandingHeroProps> = ({ onStartHunting }) => {
               <MagicInput onAnalyze={onStartHunting} />
               
               <p className="text-xs text-slate-400 mt-8 font-mono tracking-wide opacity-80">
-                No credit card required · AI gets smarter with every lead you review
+                Takes ~5 seconds • No credit card required
               </p>
             </div>
           </div>
