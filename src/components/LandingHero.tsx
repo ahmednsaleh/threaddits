@@ -23,9 +23,8 @@ export const LandingHero: React.FC<LandingHeroProps> = ({ onStartHunting }) => {
             </span>
           </div>
 
-          <h1 className="text-6xl md:text-8xl font-bold tracking-tight text-[#2C3E50] leading-[0.9]">
-            Turn<br />
-            <span className="text-[#C2410C]">Reddit</span> conversations<br />
+          <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-[#2C3E50] leading-[0.9]">
+            Turn <span className="text-[#C2410C]">Reddit</span> conversations<br />
             into customers.
           </h1>
           
