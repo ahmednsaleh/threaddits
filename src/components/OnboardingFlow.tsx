@@ -198,7 +198,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
               data?.description ||
               data?.value_proposition ||
               "",
-            painsFrustrations: data?.pain_points_solved || data?.pains || "",
+            painsFrustrations: data?.pain_points || data?.pain_points_solved || data?.pains || "",
             subreddits: data?.subreddits
               ? Array.isArray(data.subreddits)
                 ? data.subreddits

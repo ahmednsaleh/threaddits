@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { useState, useEffect } from 'react';
+import * as React from "react";
+import { useState, useEffect } from "react";
 import {
   X,
   Sparkles,
@@ -9,13 +9,13 @@ import {
   Target,
   Zap,
   Plus,
-  Check
-} from 'lucide-react';
-import { Button } from './ui/button';
-import { cn } from '../lib/utils';
-import { toast } from 'sonner';
-import { supabase } from '../integrations/supabase/client';
-import { useQueryClient } from '@tanstack/react-query';
+  Check,
+} from "lucide-react";
+import { Button } from "./ui/button";
+import { cn } from "../lib/utils";
+import { toast } from "sonner";
+import { supabase } from "../integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface AddProductModalProps {
   isOpen: boolean;
@@ -23,28 +23,39 @@ interface AddProductModalProps {
   onSave: (product: any) => void;
 }
 
-export const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClose, onSave }) => {
-  const [step, setStep] = useState<'input' | 'analyzing' | 'review'>('input');
-  const [url, setUrl] = useState('');
+export const AddProductModal: React.FC<AddProductModalProps> = ({
+  isOpen,
+  onClose,
+  onSave,
+}) => {
+  const [step, setStep] = useState<"input" | "analyzing" | "review">("input");
+  const [url, setUrl] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
   // Form State (Review Step)
   const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    audience: '',
-    painPoints: [] as string[]
+    name: "",
+    description: "",
+    audience: "",
+    primaryJob: "",
+    painPoints: [] as string[],
   });
-  const [newPainPoint, setNewPainPoint] = useState('');
+  const [newPainPoint, setNewPainPoint] = useState("");
 
   // Reset state when modal opens/closes
   useEffect(() => {
     if (isOpen) {
-      setStep('input');
-      setUrl('');
-      setFormData({ name: '', description: '', audience: '', painPoints: [] });
+      setStep("input");
+      setUrl("");
+      setFormData({
+        name: "",
+        description: "",
+        audience: "",
+        primaryJob: "",
+        painPoints: [],
+      });
       setIsAnalyzing(false);
       setAnalysisError(null);
     }
@@ -54,56 +65,69 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClos
   const handleAnalyze = async () => {
     if (!url.trim()) return;
 
-    setStep('analyzing');
+    setStep("analyzing");
     setIsAnalyzing(true);
     setAnalysisError(null);
 
     try {
-      const { data, error } = await supabase.functions.invoke('extract-product-info', {
-        body: { url: url.trim() },
-      });
+      const { data, error } = await supabase.functions.invoke(
+        "extract-product-info",
+        {
+          body: { url: url.trim() },
+        },
+      );
 
       if (error) throw error;
 
       setFormData({
-        name: data?.product_name || data?.name || '',
-        description: data?.product_description || data?.description || '',
-        audience: data?.persona || data?.audience || data?.target_audience || '',
-        painPoints: data?.pain_points_solved
-          ? data.pain_points_solved.split(',').map((s: string) => s.trim()).filter(Boolean)
-          : data?.painPoints || [],
+        name: data?.product_name || data?.name || "",
+        description: data?.product_description || data?.description || "",
+        audience:
+          data?.persona || data?.audience || data?.target_audience || "",
+        primaryJob: data?.primary_job || data?.jobs_to_be_done || "",
+        painPoints:
+          data?.pain_points || data?.pain_points_solved
+            ? (data.pain_points || data.pain_points_solved)
+                .split(",")
+                .map((s: string) => s.trim())
+                .filter(Boolean)
+            : data?.painPoints || [],
       });
       setIsAnalyzing(false);
-      setStep('review');
+      setStep("review");
     } catch (err: any) {
-      console.error('Analysis failed:', err);
+      console.error("Analysis failed:", err);
       setIsAnalyzing(false);
-      setAnalysisError(err.message || 'Analysis failed');
-      setStep('input');
-      toast.error('Analysis failed', { description: err.message || 'Could not analyze the URL. Try again or enter details manually.' });
+      setAnalysisError(err.message || "Analysis failed");
+      setStep("input");
+      toast.error("Analysis failed", {
+        description:
+          err.message ||
+          "Could not analyze the URL. Try again or enter details manually.",
+      });
     }
   };
 
   // Handle Pain Point Management
   const addPainPoint = () => {
     if (newPainPoint.trim()) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        painPoints: [...prev.painPoints, newPainPoint.trim()]
+        painPoints: [...prev.painPoints, newPainPoint.trim()],
       }));
-      setNewPainPoint('');
+      setNewPainPoint("");
     }
   };
 
   const removePainPoint = (index: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      painPoints: prev.painPoints.filter((_, i) => i !== index)
+      painPoints: prev.painPoints.filter((_, i) => i !== index),
     }));
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       e.preventDefault();
       addPainPoint();
     }
@@ -111,40 +135,53 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClos
 
   const handleSave = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
-        toast.error('Not authenticated', { description: 'Please sign in first.' });
+        toast.error("Not authenticated", {
+          description: "Please sign in first.",
+        });
         return;
       }
 
-      const { data, error } = await supabase.from('products').insert({
-        user_id: user.id,
-        product_name: formData.name,
-        product_description: formData.description,
-        persona: formData.audience,
-        pain_points_solved: formData.painPoints.join(', '),
-        product_url: url.trim() || null,
-        business_type: 'B2B',
-        status: 'active',
-      }).select('id').single();
+      const { data, error } = await supabase
+        .from("products")
+        .insert({
+          user_id: user.id,
+          product_name: formData.name,
+          product_description: formData.description,
+          persona: formData.audience,
+          pain_points_solved: formData.painPoints.join(", "),
+          jobs_to_be_done: formData.primaryJob || null,
+          product_url: url.trim() || null,
+          business_type: "B2B",
+          status: "active",
+        })
+        .select("id")
+        .single();
 
       if (error) throw error;
 
       // Kick off the lead discovery engine (non-fatal if it fails)
       if (data?.id) {
-        supabase.functions.invoke('onboard-product', {
-          body: { product_id: data.id },
-        }).catch((e) => console.error('onboard-product error:', e));
+        supabase.functions
+          .invoke("onboard-product", {
+            body: { product_id: data.id },
+          })
+          .catch((e) => console.error("onboard-product error:", e));
       }
 
       // Invalidate products cache so all product lists refresh
-      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
 
-      toast.success('Product created!', { description: 'Your engine will start hunting shortly.' });
+      toast.success("Product created!", {
+        description: "Your engine will start hunting shortly.",
+      });
       onSave(formData);
       onClose();
     } catch (err: any) {
-      toast.error('Failed to create product', { description: err.message });
+      toast.error("Failed to create product", { description: err.message });
     }
   };
 
@@ -160,7 +197,6 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClos
 
       {/* Modal Container */}
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-100 flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
-
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -170,7 +206,7 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClos
         </button>
 
         {/* --- STATE 1: INPUT --- */}
-        {step === 'input' && (
+        {step === "input" && (
           <div className="p-8 md:p-12 flex flex-col items-center text-center">
             <div className="w-14 h-14 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-center mb-6 shadow-sm">
               <Globe className="w-7 h-7 text-[#2C3E50]" />
@@ -180,7 +216,8 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClos
               Add New Product
             </h2>
             <p className="text-slate-500 text-lg mb-8 max-w-md">
-              Enter your landing page URL. We'll analyze it to identify your target audience and pain points automatically.
+              Enter your landing page URL. We'll analyze it to identify your
+              target audience and pain points automatically.
             </p>
 
             <div className="w-full max-w-lg relative group">
@@ -192,7 +229,7 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClos
                 placeholder="https://your-product.com"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleAnalyze()}
+                onKeyDown={(e) => e.key === "Enter" && handleAnalyze()}
                 className="w-full h-14 pl-12 pr-4 rounded-xl border-2 border-slate-200 focus:border-[#2C3E50] focus:ring-0 text-lg text-[#2C3E50] placeholder:text-slate-300 transition-all outline-none"
                 autoFocus
               />
@@ -213,7 +250,7 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClos
         )}
 
         {/* --- STATE 2: ANALYZING --- */}
-        {step === 'analyzing' && (
+        {step === "analyzing" && (
           <div className="p-12 flex flex-col items-center justify-center min-h-[400px]">
             <div className="relative">
               <div className="w-20 h-20 rounded-full border-4 border-slate-100 border-t-[#C2410C] animate-spin"></div>
@@ -231,37 +268,48 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClos
         )}
 
         {/* --- STATE 3: REVIEW --- */}
-        {step === 'review' && (
+        {step === "review" && (
           <div className="flex flex-col h-full">
             <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex items-center gap-3">
               <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-600">
                 <Check className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-[#2C3E50]">Review Product DNA</h2>
-                <p className="text-xs text-slate-500 font-medium">AI analysis complete. Refine details below.</p>
+                <h2 className="text-lg font-bold text-[#2C3E50]">
+                  Review Product DNA
+                </h2>
+                <p className="text-xs text-slate-500 font-medium">
+                  AI analysis complete. Refine details below.
+                </p>
               </div>
             </div>
 
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
-
               {/* Product Name */}
               <div className="space-y-2">
-                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Product Name</label>
+                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">
+                  Product Name
+                </label>
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   className="w-full p-3 rounded-lg border border-slate-200 focus:border-[#C2410C] focus:ring-1 focus:ring-[#C2410C] outline-none text-[#2C3E50] font-bold"
                 />
               </div>
 
               {/* Description */}
               <div className="space-y-2">
-                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Short Description</label>
+                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">
+                  Short Description
+                </label>
                 <textarea
                   value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
                   className="w-full p-3 rounded-lg border border-slate-200 focus:border-[#C2410C] focus:ring-1 focus:ring-[#C2410C] outline-none text-slate-600 text-sm leading-relaxed min-h-[80px] resize-none"
                 />
               </div>
@@ -274,7 +322,25 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClos
                 <input
                   type="text"
                   value={formData.audience}
-                  onChange={(e) => setFormData({...formData, audience: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, audience: e.target.value })
+                  }
+                  className="w-full p-3 rounded-lg border border-slate-200 focus:border-[#C2410C] focus:ring-1 focus:ring-[#C2410C] outline-none text-[#2C3E50] font-medium"
+                />
+              </div>
+
+              {/* Primary Job */}
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">
+                  Primary Job
+                </label>
+                <input
+                  type="text"
+                  value={formData.primaryJob}
+                  onChange={(e) =>
+                    setFormData({ ...formData, primaryJob: e.target.value })
+                  }
+                  placeholder="Help [persona] [achieve outcome]"
                   className="w-full p-3 rounded-lg border border-slate-200 focus:border-[#C2410C] focus:ring-1 focus:ring-[#C2410C] outline-none text-[#2C3E50] font-medium"
                 />
               </div>
@@ -287,7 +353,10 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClos
 
                 <div className="flex flex-wrap gap-2">
                   {formData.painPoints.map((point, index) => (
-                    <div key={index} className="inline-flex items-center bg-slate-100 text-slate-700 px-3 py-1.5 rounded-full text-sm font-medium border border-slate-200 group">
+                    <div
+                      key={index}
+                      className="inline-flex items-center bg-slate-100 text-slate-700 px-3 py-1.5 rounded-full text-sm font-medium border border-slate-200 group"
+                    >
                       {point}
                       <button
                         onClick={() => removePainPoint(index)}
@@ -316,13 +385,12 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClos
                   </div>
                 </div>
               </div>
-
             </div>
 
             <div className="p-6 border-t border-slate-100 bg-white flex items-center justify-between gap-4">
               <Button
                 variant="ghost"
-                onClick={() => setStep('input')}
+                onClick={() => setStep("input")}
                 className="text-slate-500 hover:text-slate-800"
               >
                 Back
@@ -336,7 +404,6 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClos
             </div>
           </div>
         )}
-
       </div>
     </div>
   );
