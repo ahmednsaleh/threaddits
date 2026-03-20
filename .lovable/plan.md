@@ -1,16 +1,22 @@
 
 
-## Plan: Update Hero Section Text
+## Plan: Update Hero Text in LandingHero.tsx
 
-Text-only changes to `src/components/LandingHero.tsx`. No new files, no design changes.
+Single file change: `src/components/LandingHero.tsx`
 
 ### Changes
 
-1. **Remove rotating text animation** — Delete the `useState`/`useEffect`/`tick` logic for the typewriter effect
-2. **Replace H1** — Static text: "Find buyers already asking for your product."
-3. **Replace subtitle** — New copy with "Reddit" kept in `text-[#C2410C] font-bold` span
-4. **Replace below-CTA line** — "No credit card required · AI gets smarter with every lead you review"
+1. **H1** — Replace current single-line headline with multi-line:
+   ```
+   Turn
+   Reddit conversations
+   into customers.
+   ```
+   "Reddit" gets `text-[#C2410C] font-bold`, everything else `text-[#2C3E50]`. Same size/weight classes.
 
-### Single file modified
-`src/components/LandingHero.tsx`
+2. **Subtitle** — Replace with: "Paste your URL. Get high-intent buyers in seconds."
+
+3. **Sub-CTA line** — Change back to: "Takes ~5 seconds • No credit card required"
+
+4. **Keep everything else** — badge, MagicInput, layout, grid, spacing unchanged.
 
