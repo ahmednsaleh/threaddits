@@ -17,6 +17,12 @@ export const LandingHero: React.FC<LandingHeroProps> = ({ onStartHunting }) => {
       <div className="container mx-auto px-6 text-center relative z-10">
         <div className="max-w-5xl mx-auto space-y-10">
           
+          <div className="flex justify-center">
+            <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#C2410C]/10 text-[#C2410C] text-sm font-bold tracking-wide">
+              🔥 Reddit Lead Engine
+            </span>
+          </div>
+
           <h1 className="text-6xl md:text-8xl font-bold tracking-tight text-[#2C3E50] leading-[0.9]">
             Find buyers already asking for your product.
           </h1>
