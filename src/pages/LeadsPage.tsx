@@ -13,6 +13,7 @@ import {
   ScanLine,
   Lock,
   Loader2,
+  Download,
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { LeadCard } from "../components/LeadCard";
@@ -26,6 +27,7 @@ import { useUserProfile } from "../hooks/useUserProfile";
 import { useAuth } from "../contexts/AuthContext";
 import { supabase } from "../integrations/supabase/client";
 import { toast } from "sonner";
+import { exportLeadsToCsv } from "../lib/csvExport";
 
 type LeadFilter = "all" | "new" | "warm" | "hot";
 
@@ -94,8 +96,9 @@ export default function LeadsPage({
   });
 
   // Fetch metrics for pipeline bar
-  const { data: metrics = { total: 0, hotLeads: 0, avgScore: 0, newThisWeek: 0 } } =
-    useLeadMetrics(activeProductId);
+  const {
+    data: metrics = { total: 0, hotLeads: 0, avgScore: 0, newThisWeek: 0 },
+  } = useLeadMetrics(activeProductId);
 
   // Bulk-fetch drafts for all visible leads to avoid N+1 queries
   const leadIds = leads?.map((l) => l.id) ?? [];
@@ -445,6 +448,27 @@ export default function LeadsPage({
                 </>
               )}
             </div>
+
+            <Button
+              variant="outline"
+              onClick={() => {
+                if (filteredLeads.length === 0) {
+                  toast.error("No leads to export");
+                  return;
+                }
+                exportLeadsToCsv(
+                  filteredLeads,
+                  activeProduct?.product_name || "leads",
+                );
+                toast.success(
+                  `Exported ${filteredLeads.length} leads to CSV`,
+                );
+              }}
+              disabled={filteredLeads.length === 0}
+              className="rounded-full border-slate-200 h-11 px-6 flex items-center gap-2"
+            >
+              <Download className="w-3.5 h-3.5" /> Export
+            </Button>
           </div>
         </div>
 

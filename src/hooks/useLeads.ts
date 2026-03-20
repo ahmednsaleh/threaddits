@@ -23,6 +23,7 @@ export interface Lead {
   is_solution_seeking: boolean | null;
   is_problem_focused: boolean | null;
   product_id: string | null;
+  suggested_reply_hook: string | null;
 }
 
 export type TimeFilter = "Last 24h" | "Last Week" | "Last Month" | "All Time";
@@ -78,7 +79,7 @@ export function useLeads({
       let query = supabase
         .from("leads")
         .select(
-          "id, post_url, post_title, post_content, author, source_subreddit, intent_score, buying_stage_detail, urgency_signals_detail, relevance_summary, problem_statement_detail, competitors_mentioned, competitive_context_detail, sentiment, status, user_feedback, created_utc, product_id, is_solution_seeking, is_problem_focused",
+          "id, post_url, post_title, post_content, author, source_subreddit, intent_score, buying_stage_detail, urgency_signals_detail, relevance_summary, problem_statement_detail, competitors_mentioned, competitive_context_detail, sentiment, status, user_feedback, created_utc, product_id, is_solution_seeking, is_problem_focused, suggested_reply_hook",
         )
         .eq("user_id", user.id)
         .eq("product_id", productId)
