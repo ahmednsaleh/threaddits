@@ -1585,6 +1585,8 @@ export type Database = {
           created_at: string | null
           id: string
           last_activity_at: string | null
+          last_post_id: string | null
+          last_post_timestamp: number | null
           origin: string | null
           product_id: string | null
           rejected_leads_count: number | null
@@ -1597,6 +1599,8 @@ export type Database = {
           created_at?: string | null
           id?: string
           last_activity_at?: string | null
+          last_post_id?: string | null
+          last_post_timestamp?: number | null
           origin?: string | null
           product_id?: string | null
           rejected_leads_count?: number | null
@@ -1609,6 +1613,8 @@ export type Database = {
           created_at?: string | null
           id?: string
           last_activity_at?: string | null
+          last_post_id?: string | null
+          last_post_timestamp?: number | null
           origin?: string | null
           product_id?: string | null
           rejected_leads_count?: number | null
