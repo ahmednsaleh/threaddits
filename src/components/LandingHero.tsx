@@ -38,7 +38,7 @@ export const LandingHero: React.FC<LandingHeroProps> = ({ onStartHunting }) => {
               <MagicInput onAnalyze={onStartHunting} />
               
               <p className="text-xs text-slate-400 mt-8 font-mono tracking-wide opacity-80">
-                No credit card required · AI gets smarter with every lead you review
+                Takes ~5 seconds • No credit card required
               </p>
             </div>
           </div>
