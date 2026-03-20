@@ -28,6 +28,29 @@ import { supabase } from "../integrations/supabase/client";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 
+const trackOnboardingEvent = async (
+  event:
+    | "url_submitted"
+    | "analysis_complete"
+    | "analysis_failed"
+    | "product_saved",
+  extras?: { url?: string; error?: string },
+) => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+  supabase
+    .from("onboarding_events")
+    .insert({
+      user_id: user.id,
+      event,
+      url: extras?.url ?? null,
+      error: extras?.error ?? null,
+    })
+    .then(() => {}); // fire and forget
+};
+
 interface OnboardingFlowProps {
   initialUrl?: string;
 }
@@ -135,6 +158,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
       navigate("/auth");
       return;
     }
+    trackOnboardingEvent("url_submitted", { url: inputUrl.trim() });
     setUrl(inputUrl);
     setStep("analysis");
   };
@@ -198,7 +222,11 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
               data?.description ||
               data?.value_proposition ||
               "",
-            painsFrustrations: data?.pain_points || data?.pain_points_solved || data?.pains || "",
+            painsFrustrations:
+              data?.pain_points ||
+              data?.pain_points_solved ||
+              data?.pains ||
+              "",
             subreddits: data?.subreddits
               ? Array.isArray(data.subreddits)
                 ? data.subreddits
@@ -217,11 +245,16 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
               : [],
           });
 
+          trackOnboardingEvent("analysis_complete", { url: url.trim() });
           apiDone = true;
           tryTransition();
         } catch (err: any) {
           if (cancelled) return;
           console.error("Analysis failed:", err);
+          trackOnboardingEvent("analysis_failed", {
+            url: url.trim(),
+            error: err.message,
+          });
           toast.error("Analysis failed", {
             description: err.message || "Could not analyze the URL. Try again.",
           });
@@ -313,6 +346,8 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
             subreddits_count: formData.subreddits.length,
             keywords_count: formData.keywords.length,
           });
+
+          trackOnboardingEvent("product_saved", { url: url.trim() });
 
           queryClient.invalidateQueries({ queryKey: ["products"] });
           queryClient.invalidateQueries({ queryKey: ["user-profile"] });

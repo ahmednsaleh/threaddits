@@ -17,6 +17,29 @@ import { toast } from "sonner";
 import { supabase } from "../integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 
+const trackOnboardingEvent = async (
+  event:
+    | "url_submitted"
+    | "analysis_complete"
+    | "analysis_failed"
+    | "product_saved",
+  extras?: { url?: string; error?: string },
+) => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+  supabase
+    .from("onboarding_events")
+    .insert({
+      user_id: user.id,
+      event,
+      url: extras?.url ?? null,
+      error: extras?.error ?? null,
+    })
+    .then(() => {}); // fire and forget
+};
+
 interface AddProductModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -65,6 +88,7 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({
   const handleAnalyze = async () => {
     if (!url.trim()) return;
 
+    trackOnboardingEvent("url_submitted", { url: url.trim() });
     setStep("analyzing");
     setIsAnalyzing(true);
     setAnalysisError(null);
@@ -94,12 +118,17 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({
             : data?.painPoints || [],
       });
       setIsAnalyzing(false);
+      trackOnboardingEvent("analysis_complete", { url: url.trim() });
       setStep("review");
     } catch (err: any) {
       console.error("Analysis failed:", err);
       setIsAnalyzing(false);
       setAnalysisError(err.message || "Analysis failed");
       setStep("input");
+      trackOnboardingEvent("analysis_failed", {
+        url: url.trim(),
+        error: err.message,
+      });
       toast.error("Analysis failed", {
         description:
           err.message ||
@@ -178,6 +207,7 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({
       toast.success("Product created!", {
         description: "Your engine will start hunting shortly.",
       });
+      trackOnboardingEvent('product_saved', { url: url.trim() });
       onSave(formData);
       onClose();
     } catch (err: any) {
