@@ -335,17 +335,8 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
 
           if (insertError) throw insertError;
 
-          // Call onboard-product edge function to kick off the engine
-          if (product?.id) {
-            try {
-              await supabase.functions.invoke("onboard-product", {
-                body: { product_id: product.id },
-              });
-            } catch (e) {
-              // Non-fatal: product created, engine will pick it up on next cycle
-              console.error("onboard-product edge function error:", e);
-            }
-          }
+          // Crawler auto-detects new products within 30s and triggers immediate crawl
+          // (onboard-product edge function removed — it created duplicate products)
 
           // Mark onboarding complete
           await supabase
