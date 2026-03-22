@@ -13,6 +13,8 @@ import { OnboardingFlow } from "../components/OnboardingFlow";
 import { ProductShowcase } from "../components/ProductShowcase";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "../integrations/supabase/client";
 
 const FAQItem = ({
   question,
@@ -58,11 +60,25 @@ export default function Homepage() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
 
+  // Only redirect to dashboard if user already has products
+  const { data: userProducts } = useQuery({
+    queryKey: ["products", user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data } = await supabase
+        .from("products")
+        .select("id")
+        .eq("user_id", user.id);
+      return data || [];
+    },
+    enabled: !!user,
+  });
+
   useEffect(() => {
-    if (!loading && user) {
+    if (!loading && user && userProducts && userProducts.length > 0) {
       navigate("/dashboard", { replace: true });
     }
-  }, [user, loading, navigate]);
+  }, [user, loading, userProducts, navigate]);
 
   const handleStartHunting = (url: string) => {
     console.log(`Analyzing URL: ${url}`);

@@ -409,6 +409,21 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
             buyers.
           </p>
           <MagicInput onAnalyze={handleAnalyze} />
+          {user && (
+            <button
+              onClick={async () => {
+                const { signOut } =
+                  await import("../integrations/supabase/client").then((m) => ({
+                    signOut: () => m.supabase.auth.signOut(),
+                  }));
+                await signOut();
+                navigate("/");
+              }}
+              className="mt-8 text-sm text-slate-400 hover:text-slate-600 transition-colors"
+            >
+              Sign out
+            </button>
+          )}
         </div>
       </div>
     );
