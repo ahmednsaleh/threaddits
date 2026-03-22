@@ -21,6 +21,7 @@ import GummySearchAlternative from "./pages/blog/GummySearchAlternative";
 import BestRedditLeadGenTools from "./pages/blog/BestRedditLeadGenTools";
 import RedditLeadGenForSaas from "./pages/blog/RedditLeadGenForSaas";
 import { AppLayout } from "./components/AppLayout";
+import OnboardingPage from "./pages/OnboardingPage";
 
 const queryClient = new QueryClient();
 
@@ -38,9 +39,20 @@ const App = () => (
               <Route path="/terms" element={<TermsPage />} />
               <Route path="/privacy" element={<PrivacyPage />} />
               <Route path="/blog" element={<BlogPage />} />
-              <Route path="/blog/gummysearch-alternative" element={<GummySearchAlternative />} />
-              <Route path="/blog/best-reddit-lead-generation-tools-2026" element={<BestRedditLeadGenTools />} />
-              <Route path="/blog/reddit-lead-generation-for-saas" element={<RedditLeadGenForSaas />} />
+              <Route
+                path="/blog/gummysearch-alternative"
+                element={<GummySearchAlternative />}
+              />
+              <Route
+                path="/blog/best-reddit-lead-generation-tools-2026"
+                element={<BestRedditLeadGenTools />}
+              />
+              <Route
+                path="/blog/reddit-lead-generation-for-saas"
+                element={<RedditLeadGenForSaas />}
+              />
+
+              <Route path="/onboarding" element={<OnboardingPage />} />
 
               <Route element={<AppLayout />}>
                 <Route path="/dashboard" element={<Dashboard />} />

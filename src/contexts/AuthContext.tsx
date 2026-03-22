@@ -55,7 +55,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const signInWithGoogle = async () => {
-    const redirectUrl = `${window.location.origin}/dashboard`;
+    // Redirect to /onboarding after sign-in so new users enter the onboarding flow.
+    // If they already have products, AppLayout will handle routing to /dashboard.
+    const pendingUrl = localStorage.getItem("threaddits_pending_url");
+    const redirectUrl = pendingUrl
+      ? `${window.location.origin}/onboarding`
+      : `${window.location.origin}/dashboard`;
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",

@@ -7,11 +7,27 @@ import { Button } from "./ui/button";
 import { Toaster } from "./ui/sonner";
 import { useAuth } from "../contexts/AuthContext";
 import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "../integrations/supabase/client";
 
 export const AppLayout = () => {
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+
+  // Check if user has any products (gates onboarding)
+  const { data: products, isLoading: productsLoading } = useQuery({
+    queryKey: ["products", user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data } = await supabase
+        .from("products")
+        .select("id")
+        .eq("user_id", user.id);
+      return data || [];
+    },
+    enabled: !!user,
+  });
 
   // Redirect unauthenticated users to auth page
   useEffect(() => {
@@ -20,8 +36,21 @@ export const AppLayout = () => {
     }
   }, [user, loading, navigate]);
 
-  // Show loading state while checking auth
-  if (loading) {
+  // Redirect new users with no products to onboarding
+  useEffect(() => {
+    if (
+      !loading &&
+      user &&
+      !productsLoading &&
+      products &&
+      products.length === 0
+    ) {
+      navigate("/onboarding", { replace: true });
+    }
+  }, [user, loading, products, productsLoading, navigate]);
+
+  // Show loading state while checking auth or products
+  if (loading || productsLoading) {
     return (
       <div className="min-h-screen w-full bg-[#FAFAFA] flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#C2410C]" />
@@ -31,6 +60,11 @@ export const AppLayout = () => {
 
   // Don't render layout for unauthenticated users
   if (!user) {
+    return null;
+  }
+
+  // Don't render layout if user needs onboarding
+  if (products && products.length === 0) {
     return null;
   }
 

@@ -123,11 +123,19 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
+  // Restore URL from localStorage if not provided as prop (survives OAuth redirect)
+  const restoredUrl =
+    initialUrl || localStorage.getItem("threaddits_pending_url") || "";
+  if (restoredUrl) {
+    // Clear it so it doesn't persist across future sessions
+    localStorage.removeItem("threaddits_pending_url");
+  }
+
   // State Machine
-  const [step, setStep] = useState<Step>(initialUrl ? "analysis" : "input");
+  const [step, setStep] = useState<Step>(restoredUrl ? "analysis" : "input");
 
   // Data State
-  const [url, setUrl] = useState(initialUrl || "");
+  const [url, setUrl] = useState(restoredUrl);
   const [logs, setLogs] = useState<string[]>([]);
   const [launchStatus, setLaunchStatus] = useState<
     { id: string; text: string; status: "pending" | "active" | "done" }[]
@@ -155,6 +163,8 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
   // --- STEP 1: INPUT ---
   const handleAnalyze = (inputUrl: string) => {
     if (!user) {
+      // Persist URL so it survives the OAuth redirect
+      localStorage.setItem("threaddits_pending_url", inputUrl.trim());
       navigate("/auth");
       return;
     }

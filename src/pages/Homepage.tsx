@@ -60,12 +60,14 @@ export default function Homepage() {
 
   useEffect(() => {
     if (!loading && user) {
-      navigate('/dashboard', { replace: true });
+      navigate("/dashboard", { replace: true });
     }
   }, [user, loading, navigate]);
 
   const handleStartHunting = (url: string) => {
     console.log(`Analyzing URL: ${url}`);
+    // Persist URL so it survives OAuth redirect for new users
+    localStorage.setItem("threaddits_pending_url", url.trim());
     setAnalyzedUrl(url);
     setView("onboarding");
   };
