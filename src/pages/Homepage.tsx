@@ -68,6 +68,14 @@ export default function Homepage() {
     console.log(`Analyzing URL: ${url}`);
     // Persist URL so it survives OAuth redirect for new users
     localStorage.setItem("threaddits_pending_url", url.trim());
+
+    if (!user) {
+      // Not logged in — go straight to auth, skip the onboarding view
+      // After OAuth, user lands on /onboarding which restores the URL
+      navigate("/auth");
+      return;
+    }
+
     setAnalyzedUrl(url);
     setView("onboarding");
   };

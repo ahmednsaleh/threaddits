@@ -126,13 +126,15 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
   // Restore URL from localStorage if not provided as prop (survives OAuth redirect)
   const restoredUrl =
     initialUrl || localStorage.getItem("threaddits_pending_url") || "";
-  if (restoredUrl) {
-    // Clear it so it doesn't persist across future sessions
+  if (restoredUrl && user) {
+    // Only clear once user is authenticated and will actually use it
     localStorage.removeItem("threaddits_pending_url");
   }
 
-  // State Machine
-  const [step, setStep] = useState<Step>(restoredUrl ? "analysis" : "input");
+  // State Machine — only auto-start analysis if user is logged in AND has a URL
+  const [step, setStep] = useState<Step>(
+    restoredUrl && user ? "analysis" : "input",
+  );
 
   // Data State
   const [url, setUrl] = useState(restoredUrl);
