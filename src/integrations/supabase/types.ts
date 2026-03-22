@@ -1471,6 +1471,33 @@ export type Database = {
         }
         Relationships: []
       }
+      onboarding_events: {
+        Row: {
+          created_at: string | null
+          error: string | null
+          event: string
+          id: string
+          url: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          error?: string | null
+          event: string
+          id?: string
+          url?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          error?: string | null
+          event?: string
+          id?: string
+          url?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       processed_messages: {
         Row: {
           chat_id: number
