@@ -41,7 +41,7 @@ const trackOnboardingEvent = async (
   } = await supabase.auth.getUser();
   if (!user) return;
   supabase
-    .from("onboarding_events")
+    .from("onboarding_events" as any)
     .insert({
       user_id: user.id,
       event,
