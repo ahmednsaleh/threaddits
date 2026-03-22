@@ -86,7 +86,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
 
   const handleLogout = async () => {
     await signOut();
-    navigate("/auth");
+    navigate("/");
   };
 
   const NavLinks = () => (
