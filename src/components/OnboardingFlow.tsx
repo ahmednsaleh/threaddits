@@ -217,7 +217,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
           const { data, error } = await supabase.functions.invoke(
             "extract-product-info",
             {
-              body: { url: url.trim() },
+              body: { product_url: url.trim() },
             },
           );
 
