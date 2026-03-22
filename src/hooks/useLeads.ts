@@ -66,6 +66,11 @@ export function useLeads({
   searchQuery = "",
 }: UseLeadsParams) {
   const { user } = useAuth();
+  const { data: userProfile } = useUserProfile();
+
+  const subscriptionTier = userProfile?.subscription_tier || "free";
+  const isPaidUser =
+    subscriptionTier === "starter" || subscriptionTier === "pro";
 
   return useQuery({
     queryKey: [
@@ -75,6 +80,7 @@ export function useLeads({
       statusFilter,
       timeFilter,
       searchQuery,
+      subscriptionTier,
     ],
     queryFn: async (): Promise<Lead[]> => {
       if (!user?.id || !productId) return [];
@@ -98,6 +104,11 @@ export function useLeads({
       const timeDate = getTimeFilterDate(timeFilter);
       if (timeDate) {
         query = query.gte("created_at", timeDate.toISOString());
+      }
+
+      // Server-side limit for free-tier users
+      if (!isPaidUser) {
+        query = query.limit(FREE_LEAD_LIMIT);
       }
 
       const { data, error } = await query;
