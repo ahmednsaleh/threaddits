@@ -66,11 +66,6 @@ export function useLeads({
   refetchInterval = false,
 }: UseLeadsParams) {
   const { user } = useAuth();
-  const { data: userProfile } = useUserProfile();
-
-  const subscriptionTier = userProfile?.subscription_tier || "free";
-  const isPaidUser =
-    subscriptionTier === "starter" || subscriptionTier === "pro";
 
   return useQuery({
     queryKey: [
