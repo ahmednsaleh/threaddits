@@ -498,7 +498,7 @@ export default function Dashboard() {
               <div className="flex items-center gap-2">
                 <BrainCircuit className="w-4 h-4 text-[#C2410C]" />
                 <h2 className="text-base font-bold text-[#2C3E50]">
-                  Product Evolution
+                  System Evolution
                 </h2>
               </div>
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">

@@ -35,7 +35,17 @@ import {
   useToggleProductStatus,
 } from "../hooks/useProduct";
 import { useLeadMetrics } from "../hooks/useLeadMetrics";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { formatTimeAgo } from "../lib/formatTimeAgo";
+import {
+  ArrowUp,
+  ArrowDown,
+  TrendingDown,
+  TrendingUp,
+  CheckCircle2,
+  RefreshCw,
+  PlusCircle,
+} from "lucide-react";
 import { supabase } from "../integrations/supabase/client";
 
 // --- Types ---
@@ -88,6 +98,22 @@ export default function EditProductPage() {
     useProductKeywords(id);
   const { data: metrics } = useLeadMetrics(id || null);
   const queryClient = useQueryClient();
+
+  const { data: productEvents = [] } = useQuery({
+    queryKey: ["product-evolution", id],
+    queryFn: async () => {
+      if (!id) return [];
+      const { data, error } = await supabase
+        .from("system_actions")
+        .select("*")
+        .eq("product_id", id)
+        .order("executed_at", { ascending: false })
+        .limit(15);
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!id,
+  });
   const updateProduct = useUpdateProduct();
   const toggleStatus = useToggleProductStatus();
 
@@ -683,19 +709,69 @@ export default function EditProductPage() {
               </div>
             </div>
 
-            {/* 2. System Evolution placeholder */}
-            <div className="flex-1 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col">
-              <div className="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4 shrink-0">
+            {/* 2. Product Evolution — real system_actions for this product */}
+            <div className="flex-1 bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col">
+              <div className="flex items-center gap-2 px-6 py-5 border-b border-slate-100 shrink-0">
                 <BrainCircuit className="w-4 h-4 text-[#C2410C]" />
                 <span className="text-sm font-bold text-[#2C3E50] uppercase tracking-wide">
                   Product Evolution
                 </span>
               </div>
 
-              <div className="flex-1 flex items-center justify-center">
-                <p className="text-sm text-slate-400 text-center">
-                  Evolution events will appear here as the engine learns.
-                </p>
+              <div className="p-4 flex-1 overflow-y-auto">
+                {(!productEvents || productEvents.length === 0) ? (
+                  <div className="py-8 text-center space-y-2">
+                    <p className="text-sm font-medium text-slate-400">No events yet.</p>
+                    <p className="text-xs text-slate-300 max-w-[220px] mx-auto leading-relaxed">
+                      Events appear here after each crawl run — subreddit promotions, keyword retirements, and more.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {productEvents.map((ev: any) => {
+                      const details = (ev.action_details as any) || {};
+                      const actionType: string = ev.action_type || "";
+
+                      let IconComponent = RefreshCw;
+                      let iconBg = "bg-slate-100";
+                      let iconColor = "text-slate-500";
+                      let label = actionType.replace(/_/g, " ");
+
+                      if (actionType === "subreddit_added") {
+                        IconComponent = PlusCircle; iconBg = "bg-blue-50"; iconColor = "text-blue-500";
+                        label = `r/${details.subreddit || ""} added to scanning`;
+                      } else if (actionType === "subreddit_promoted") {
+                        IconComponent = ArrowUp; iconBg = "bg-emerald-50"; iconColor = "text-emerald-600";
+                        label = `r/${details.subreddit || ""} promoted${details.avg_score ? ` (avg ${details.avg_score})` : ""}`;
+                      } else if (actionType === "subreddit_demoted") {
+                        IconComponent = ArrowDown; iconBg = "bg-amber-50"; iconColor = "text-amber-600";
+                        label = `r/${details.subreddit || ""} demoted — avg ${details.avg_score || "?"}/10`;
+                      } else if (actionType === "keyword_retired") {
+                        IconComponent = TrendingDown; iconBg = "bg-rose-50"; iconColor = "text-rose-500";
+                        label = `"${details.keyword || ""}" keyword retired`;
+                      } else if (actionType === "keyword_activated") {
+                        IconComponent = TrendingUp; iconBg = "bg-emerald-50"; iconColor = "text-emerald-600";
+                        label = `"${details.keyword || ""}" keyword activated`;
+                      } else if (actionType === "crawl_complete") {
+                        IconComponent = CheckCircle2; iconBg = "bg-emerald-50"; iconColor = "text-emerald-600";
+                        label = `${details.leads ?? ""} new leads from ${details.posts ?? ""} posts`;
+                      }
+
+                      return (
+                        <div key={ev.id} className="flex items-start gap-3 p-3 rounded-lg bg-slate-50 border border-slate-100">
+                          <div className={cn("mt-0.5 flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center", iconBg, iconColor)}>
+                            <IconComponent className="w-3 h-3" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-bold text-slate-700 truncate">{label}</p>
+                            <span className="text-[10px] text-slate-400 font-mono capitalize">{actionType.replace(/_/g, " ")}</span>
+                          </div>
+                          <span className="text-[10px] text-slate-400 font-mono flex-shrink-0">{formatTimeAgo(ev.executed_at)}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
           </div>
