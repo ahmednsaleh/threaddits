@@ -120,7 +120,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
   initialUrl,
 }) => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const queryClient = useQueryClient();
 
   // Restore URL from localStorage if not provided as prop (survives OAuth redirect)
@@ -403,10 +403,6 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
           {user && (
             <button
               onClick={async () => {
-                const { signOut } =
-                  await import("../integrations/supabase/client").then((m) => ({
-                    signOut: () => m.supabase.auth.signOut(),
-                  }));
                 await signOut();
                 navigate("/");
               }}
