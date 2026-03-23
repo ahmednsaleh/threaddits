@@ -1,21 +1,22 @@
 
 
-## Fix: Horizontal Scroll on Landing Page
+## Fix: Sign Out Button on "Where Should We Hunt?" Page
 
 ### Root Cause
-The `LandingHero` section (`overflow-visible`) and `ProductShowcase` section (`overflow-visible`) allow decorative elements (blur glows, grid patterns) to extend beyond the viewport. The Homepage wrapper div has `overflow-x-hidden`, but browsers can still scroll horizontally via `<html>`/`<body>`.
+The sign-out button in `OnboardingFlow.tsx` (line 405-411) bypasses the `useAuth` context and directly imports `supabase.auth.signOut()`. It then immediately calls `navigate("/")` before the auth state change propagates through the context, creating a race condition where the user appears still logged in after navigation.
 
 ### Fix
-**File: `src/index.css`** — Add `overflow-x: hidden` to `html` and `body` in the base layer:
+**File: `src/components/OnboardingFlow.tsx`** — Replace the inline dynamic import with the `signOut` function from `useAuth()` (which is already available in the component), and `await` it before navigating:
 
-```css
-html, body {
-  overflow-x: hidden;
-}
+```tsx
+onClick={async () => {
+  await signOut();
+  navigate("/");
+}}
 ```
 
-This is the standard fix — a single global rule that prevents any section's decorative overflow from causing horizontal scroll, without breaking vertical scrolling or any component behavior.
+This ensures the Supabase session is fully cleared before redirecting. The `signOut` from `useAuth` is the canonical way to sign out across the app and triggers PostHog reset as well.
 
-### Why not fix per-component?
-Changing each section to `overflow-hidden` would clip the intentional visual effects (the glow blur in ProductShowcase extends beyond its container by design with `scale-105`). The global `overflow-x: hidden` preserves these effects while eliminating the scroll.
+### Scope
+Single file change, ~5 lines modified in `src/components/OnboardingFlow.tsx`.
 
