@@ -403,10 +403,6 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
           {user && (
             <button
               onClick={async () => {
-                const { signOut } =
-                  await import("../integrations/supabase/client").then((m) => ({
-                    signOut: () => m.supabase.auth.signOut(),
-                  }));
                 await signOut();
                 navigate("/");
               }}
