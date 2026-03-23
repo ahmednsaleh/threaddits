@@ -1,12 +1,21 @@
 
 
-## Plan: Reduce Hero Headline Size & Restructure Lines
+## Fix: Horizontal Scroll on Landing Page
 
-Single file: `src/components/LandingHero.tsx`
+### Root Cause
+The `LandingHero` section (`overflow-visible`) and `ProductShowcase` section (`overflow-visible`) allow decorative elements (blur glows, grid patterns) to extend beyond the viewport. The Homepage wrapper div has `overflow-x-hidden`, but browsers can still scroll horizontally via `<html>`/`<body>`.
 
-### Changes
+### Fix
+**File: `src/index.css`** — Add `overflow-x: hidden` to `html` and `body` in the base layer:
 
-1. **Font size**: `text-6xl md:text-8xl` → `text-5xl md:text-7xl`
-2. **Line structure**: Merge "Turn" onto line 1 with "Reddit conversations", leaving "into customers." on line 2
-3. Everything else untouched
+```css
+html, body {
+  overflow-x: hidden;
+}
+```
+
+This is the standard fix — a single global rule that prevents any section's decorative overflow from causing horizontal scroll, without breaking vertical scrolling or any component behavior.
+
+### Why not fix per-component?
+Changing each section to `overflow-hidden` would clip the intentional visual effects (the glow blur in ProductShowcase extends beyond its container by design with `scale-105`). The global `overflow-x: hidden` preserves these effects while eliminating the scroll.
 
