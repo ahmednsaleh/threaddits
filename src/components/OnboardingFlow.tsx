@@ -267,9 +267,10 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
             url: url.trim(),
             error: err.message,
           });
-          toast.error("Analysis failed", {
-            description: err.message || "Could not analyze the URL. Try again.",
+          toast.error("Could not analyze that URL — try again.", {
+            description: "Make sure it's a public landing page.",
           });
+          // Go back to input but keep the URL so user doesn't lose it
           setStep("input");
         }
       })();
@@ -399,7 +400,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
             Enter your landing page URL. We'll extract the signal to find your
             buyers.
           </p>
-          <MagicInput onAnalyze={handleAnalyze} />
+          <MagicInput onAnalyze={handleAnalyze} defaultValue={url} />
           {user && (
             <button
               onClick={async () => {
