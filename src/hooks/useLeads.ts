@@ -1,4 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -66,6 +67,34 @@ export function useLeads({
   refetchInterval = false,
 }: UseLeadsParams) {
   const { user } = useAuth();
+
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (!user?.id || !productId) return;
+
+    const channel = supabase
+      .channel(`leads:${productId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "leads",
+          filter: `product_id=eq.${productId}`,
+        },
+        () => {
+          queryClient.invalidateQueries({
+            queryKey: ["leads", user.id, productId],
+          });
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id, productId, queryClient]);
 
   return useQuery({
     queryKey: [
