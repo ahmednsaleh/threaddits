@@ -3134,6 +3134,7 @@ export type Database = {
         Args: { p_entry_id: string; p_new_content: string; p_user_id?: string }
         Returns: Json
       }
+      enforce_lead_limit: { Args: never; Returns: boolean }
       fn_batch_upsert_entities: {
         Args: { p_entities: Json }
         Returns: undefined
@@ -3188,6 +3189,55 @@ export type Database = {
       }
       get_gmail_cache: { Args: { p_cache_key: string }; Returns: Json }
       get_jira_cache: { Args: { p_cache_key: string }; Returns: Json }
+      get_leads_for_user: {
+        Args: {
+          p_limit?: number
+          p_product_id: string
+          p_status?: string
+          p_time_after?: string
+        }
+        Returns: {
+          author: string
+          buying_signal: string | null
+          buying_stage_detail: string | null
+          competitive_context_detail: string | null
+          competitors_mentioned: string | null
+          created_at: string | null
+          created_utc: string | null
+          id: string
+          intent_score: number
+          intent_type: string | null
+          is_problem_focused: boolean | null
+          is_solution_seeking: boolean | null
+          objection_barrier: string | null
+          pipeline_version: number | null
+          post_age_hours: number | null
+          post_content: string
+          post_created_utc: number | null
+          post_title: string
+          post_url: string
+          problem_statement_detail: string | null
+          product_id: string | null
+          relevance_summary: string | null
+          sentiment: string | null
+          source_subreddit: string
+          stage: string | null
+          status: string
+          suggested_reply_hook: string | null
+          updated_at: string | null
+          urgency_signal: string | null
+          urgency_signals_detail: string | null
+          user_feedback: string | null
+          user_goal: string | null
+          user_id: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "leads"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       get_optimal_subreddits_by_category: {
         Args: {
           p_business_type: string
