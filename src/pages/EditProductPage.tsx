@@ -98,6 +98,22 @@ export default function EditProductPage() {
     useProductKeywords(id);
   const { data: metrics } = useLeadMetrics(id || null);
   const queryClient = useQueryClient();
+
+  const { data: productEvents = [] } = useQuery({
+    queryKey: ["product-evolution", id],
+    queryFn: async () => {
+      if (!id) return [];
+      const { data, error } = await supabase
+        .from("system_actions")
+        .select("*")
+        .eq("product_id", id)
+        .order("executed_at", { ascending: false })
+        .limit(15);
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!id,
+  });
   const updateProduct = useUpdateProduct();
   const toggleStatus = useToggleProductStatus();
 
