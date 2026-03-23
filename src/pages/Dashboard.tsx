@@ -30,6 +30,112 @@ import { supabase } from "../integrations/supabase/client";
 import { useAuth } from "../contexts/AuthContext";
 import { formatTimeAgo } from "../lib/formatTimeAgo";
 
+// --- Scanning animation component shown while first leads load ---
+const ScanningLeadsCard: React.FC<{ subreddits: string[] }> = ({
+  subreddits,
+}) => {
+  const steps = React.useMemo(() => {
+    const subList = subreddits.length > 0 ? subreddits : ["reddit"];
+    const mid = Math.ceil(subList.length / 2);
+    const batch1 = subList
+      .slice(0, mid)
+      .map((s) => `r/${s}`)
+      .join(", ");
+    const batch2 = subList
+      .slice(mid)
+      .map((s) => `r/${s}`)
+      .join(", ");
+    return [
+      { icon: "🔌", label: "Connecting to Reddit API..." },
+      { icon: "📡", label: `Reading posts from ${batch1}` },
+      ...(batch2
+        ? [{ icon: "📡", label: `Reading posts from ${batch2}` }]
+        : []),
+      { icon: "🧠", label: "Scoring 300+ posts for buyer intent..." },
+      {
+        icon: "🔬",
+        label: "Filtering out noise — students, researchers, competitors...",
+      },
+      { icon: "🎯", label: "Matching high-intent posts to your product..." },
+      { icon: "✅", label: "Preparing your lead feed..." },
+    ];
+  }, [subreddits]);
+
+  const [currentStep, setCurrentStep] = React.useState(0);
+
+  React.useEffect(() => {
+    // Distribute steps evenly across ~150 seconds
+    const interval = Math.floor(150000 / steps.length);
+    const timer = setInterval(() => {
+      setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
+    }, interval);
+    return () => clearInterval(timer);
+  }, [steps.length]);
+
+  return (
+    <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+      <div className="p-6 md:p-8">
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-6">
+          <div className="relative">
+            <div className="w-2.5 h-2.5 rounded-full bg-[#C2410C] animate-ping absolute inset-0" />
+            <div className="w-2.5 h-2.5 rounded-full bg-[#C2410C] relative" />
+          </div>
+          <span className="text-sm font-bold text-slate-900">
+            Live — scanning Reddit for buyers
+          </span>
+          <span className="ml-auto text-xs text-slate-400 font-mono">
+            ~2 min
+          </span>
+        </div>
+
+        {/* Steps */}
+        <div className="space-y-3">
+          {steps.map((step, i) => {
+            const isDone = i < currentStep;
+            const isActive = i === currentStep;
+            const isPending = i > currentStep;
+            return (
+              <div
+                key={i}
+                className={cn(
+                  "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-500",
+                  isActive && "bg-orange-50 border border-orange-100",
+                  isDone && "opacity-50",
+                  isPending && "opacity-25",
+                )}
+              >
+                <span className="text-base w-5 shrink-0">
+                  {isDone ? "✓" : step.icon}
+                </span>
+                <span
+                  className={cn(
+                    "text-sm font-medium",
+                    isActive ? "text-orange-900" : "text-slate-600",
+                  )}
+                >
+                  {step.label}
+                </span>
+                {isActive && (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#C2410C] ml-auto shrink-0" />
+                )}
+                {isDone && (
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 ml-auto shrink-0" />
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Footer */}
+        <p className="text-xs text-slate-400 text-center mt-6">
+          This page refreshes automatically — no need to stay here.
+        </p>
+      </div>
+    </div>
+  );
+};
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -119,21 +225,9 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* SCANNING BANNER — shown while new product has no leads yet */}
+        {/* Full scanning card — replaces leads section while first run is in progress */}
         {isScanning && (
-          <div className="flex items-start gap-3 px-5 py-4 rounded-xl bg-orange-50 border border-orange-100">
-            <Loader2 className="w-4 h-4 animate-spin text-[#C2410C] shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-semibold text-orange-900">
-                Your agent is live — scanning Reddit right now.
-              </p>
-              <p className="text-xs text-orange-700 mt-0.5">
-                Reading the last 30 days of posts across your target
-                communities. First leads arrive in about 2 minutes — this page
-                updates automatically.
-              </p>
-            </div>
-          </div>
+          <ScanningLeadsCard subreddits={primaryProduct?.subreddits ?? []} />
         )}
 
         {/* 2. THE VITALS (Stats Grid) */}
@@ -208,8 +302,13 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* 3. TOP OPPORTUNITIES (Dense List) */}
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+        {/* 3. TOP OPPORTUNITIES (Dense List) — hidden while first-run scanning */}
+        <div
+          className={cn(
+            "bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden",
+            isScanning && "hidden",
+          )}
+        >
           <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
             <div className="flex items-center gap-3">
               <div className="p-1.5 bg-orange-50 rounded-md border border-orange-100">
