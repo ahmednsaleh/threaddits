@@ -1,9 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useUserProfile } from "@/hooks/useUserProfile";
 
-const FREE_LEAD_LIMIT = 10;
 
 export interface Lead {
   id: string;
@@ -68,11 +66,6 @@ export function useLeads({
   refetchInterval = false,
 }: UseLeadsParams) {
   const { user } = useAuth();
-  const { data: userProfile } = useUserProfile();
-
-  const subscriptionTier = userProfile?.subscription_tier || "free";
-  const isPaidUser =
-    subscriptionTier === "starter" || subscriptionTier === "pro";
 
   return useQuery({
     queryKey: [
@@ -82,38 +75,18 @@ export function useLeads({
       statusFilter,
       timeFilter,
       searchQuery,
-      subscriptionTier,
     ],
     queryFn: async (): Promise<Lead[]> => {
       if (!user?.id || !productId) return [];
 
-      let query = supabase
-        .from("leads")
-        .select(
-          "id, post_url, post_title, post_content, author, source_subreddit, intent_score, buying_stage_detail, urgency_signals_detail, relevance_summary, problem_statement_detail, competitors_mentioned, competitive_context_detail, sentiment, status, user_feedback, created_utc, product_id, is_solution_seeking, is_problem_focused, suggested_reply_hook",
-        )
-        .eq("user_id", user.id)
-        .eq("product_id", productId)
-        .gte("intent_score", 6)
-        .order("created_at", { ascending: false });
-
-      // Apply status filter
-      if (statusFilter !== "Show All") {
-        query = query.eq("status", statusFilter);
-      }
-
-      // Apply time filter
+      // Use server-side function that enforces lead limits based on subscription tier
       const timeDate = getTimeFilterDate(timeFilter);
-      if (timeDate) {
-        query = query.gte("created_at", timeDate.toISOString());
-      }
-
-      // Server-side limit for free-tier users
-      if (!isPaidUser) {
-        query = query.limit(FREE_LEAD_LIMIT);
-      }
-
-      const { data, error } = await query;
+      const { data, error } = await supabase.rpc("get_leads_for_user", {
+        p_product_id: productId,
+        p_status: statusFilter !== "Show All" ? statusFilter : null,
+        p_time_after: timeDate ? timeDate.toISOString() : null,
+        p_limit: 500,
+      });
 
       if (error) throw error;
 
