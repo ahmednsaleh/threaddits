@@ -42,6 +42,7 @@ interface UseLeadsParams {
   statusFilter?: StatusFilter;
   timeFilter?: TimeFilter;
   searchQuery?: string;
+  refetchInterval?: number | false;
 }
 
 function getTimeFilterDate(filter: TimeFilter): Date | null {
@@ -64,6 +65,7 @@ export function useLeads({
   statusFilter = "Show All",
   timeFilter = "All Time",
   searchQuery = "",
+  refetchInterval = false,
 }: UseLeadsParams) {
   const { user } = useAuth();
   const { data: userProfile } = useUserProfile();
@@ -92,7 +94,7 @@ export function useLeads({
         )
         .eq("user_id", user.id)
         .eq("product_id", productId)
-        .gte("intent_score", 7)
+        .gte("intent_score", 6)
         .order("created_at", { ascending: false });
 
       // Apply status filter
@@ -129,5 +131,6 @@ export function useLeads({
       return filteredData;
     },
     enabled: !!user?.id && !!productId,
+    refetchInterval,
   });
 }

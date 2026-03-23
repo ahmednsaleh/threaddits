@@ -1,25 +1,25 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
-import { useEffect } from 'react';
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useEffect } from "react";
 
 export function useTotalNewLeadsCount() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
   const query = useQuery({
-    queryKey: ['total-new-leads-count', user?.id],
+    queryKey: ["total-new-leads-count", user?.id],
     queryFn: async (): Promise<number> => {
       if (!user?.id) return 0;
 
       const { count, error } = await supabase
-        .from('leads')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .gte('intent_score', 7);
+        .from("leads")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .gte("intent_score", 6);
 
       if (error) {
-        console.error('Error fetching new leads count:', error);
+        console.error("Error fetching new leads count:", error);
         return 0;
       }
 
@@ -33,18 +33,20 @@ export function useTotalNewLeadsCount() {
     if (!user?.id) return;
 
     const channel = supabase
-      .channel('sidebar-leads-count')
+      .channel("sidebar-leads-count")
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: '*',
-          schema: 'public',
-          table: 'leads',
+          event: "*",
+          schema: "public",
+          table: "leads",
           filter: `user_id=eq.${user.id}`,
         },
         () => {
-          queryClient.invalidateQueries({ queryKey: ['total-new-leads-count'] });
-        }
+          queryClient.invalidateQueries({
+            queryKey: ["total-new-leads-count"],
+          });
+        },
       )
       .subscribe();
 
