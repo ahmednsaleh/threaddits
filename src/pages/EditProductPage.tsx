@@ -35,7 +35,17 @@ import {
   useToggleProductStatus,
 } from "../hooks/useProduct";
 import { useLeadMetrics } from "../hooks/useLeadMetrics";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { formatTimeAgo } from "../lib/formatTimeAgo";
+import {
+  ArrowUp,
+  ArrowDown,
+  TrendingDown,
+  TrendingUp,
+  CheckCircle2,
+  RefreshCw,
+  PlusCircle,
+} from "lucide-react";
 import { supabase } from "../integrations/supabase/client";
 
 // --- Types ---
