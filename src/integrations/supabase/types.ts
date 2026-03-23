@@ -1270,6 +1270,156 @@ export type Database = {
           },
         ]
       }
+      maal_budgets: {
+        Row: {
+          category: string
+          currency: string
+          id: string
+          limit_amount: number
+          month: string
+        }
+        Insert: {
+          category: string
+          currency?: string
+          id?: string
+          limit_amount: number
+          month: string
+        }
+        Update: {
+          category?: string
+          currency?: string
+          id?: string
+          limit_amount?: number
+          month?: string
+        }
+        Relationships: []
+      }
+      maal_exchange_rates: {
+        Row: {
+          date: string
+          fetched_at: string
+          id: string
+          source: string
+          usd_to_egp: number
+        }
+        Insert: {
+          date: string
+          fetched_at?: string
+          id?: string
+          source?: string
+          usd_to_egp: number
+        }
+        Update: {
+          date?: string
+          fetched_at?: string
+          id?: string
+          source?: string
+          usd_to_egp?: number
+        }
+        Relationships: []
+      }
+      maal_goals: {
+        Row: {
+          created_at: string
+          currency: string
+          current_amount: number
+          id: string
+          name: string
+          target_amount: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          current_amount?: number
+          id?: string
+          name: string
+          target_amount: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          current_amount?: number
+          id?: string
+          name?: string
+          target_amount?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      maal_merchant_categories: {
+        Row: {
+          category: string
+          merchant: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          merchant: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          merchant?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      maal_transactions: {
+        Row: {
+          amount: number
+          amount_egp: number | null
+          category: string | null
+          category_source: string | null
+          created_at: string
+          currency: string
+          description: string | null
+          exchange_rate: number | null
+          external_id: string | null
+          id: string
+          is_historical: boolean
+          merchant: string | null
+          raw_source: string | null
+          source: string
+          transaction_date: string
+        }
+        Insert: {
+          amount: number
+          amount_egp?: number | null
+          category?: string | null
+          category_source?: string | null
+          created_at?: string
+          currency: string
+          description?: string | null
+          exchange_rate?: number | null
+          external_id?: string | null
+          id?: string
+          is_historical?: boolean
+          merchant?: string | null
+          raw_source?: string | null
+          source: string
+          transaction_date?: string
+        }
+        Update: {
+          amount?: number
+          amount_egp?: number | null
+          category?: string | null
+          category_source?: string | null
+          created_at?: string
+          currency?: string
+          description?: string | null
+          exchange_rate?: number | null
+          external_id?: string | null
+          id?: string
+          is_historical?: boolean
+          merchant?: string | null
+          raw_source?: string | null
+          source?: string
+          transaction_date?: string
+        }
+        Relationships: []
+      }
       magd_content_calendar: {
         Row: {
           audience_signals_json: Json | null
@@ -1747,6 +1897,113 @@ export type Database = {
         }
         Relationships: []
       }
+      rate_limits: {
+        Row: {
+          call_count: number | null
+          function_name: string
+          id: string
+          user_id: string
+          window_start: string | null
+        }
+        Insert: {
+          call_count?: number | null
+          function_name: string
+          id?: string
+          user_id: string
+          window_start?: string | null
+        }
+        Update: {
+          call_count?: number | null
+          function_name?: string
+          id?: string
+          user_id?: string
+          window_start?: string | null
+        }
+        Relationships: []
+      }
+      rawi_pipeline_events: {
+        Row: {
+          detail: Json | null
+          duration_ms: number | null
+          id: string
+          recorded_at: string
+          run_id: string
+          stage: string
+          status: string
+        }
+        Insert: {
+          detail?: Json | null
+          duration_ms?: number | null
+          id?: string
+          recorded_at?: string
+          run_id: string
+          stage: string
+          status: string
+        }
+        Update: {
+          detail?: Json | null
+          duration_ms?: number | null
+          id?: string
+          recorded_at?: string
+          run_id?: string
+          stage?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rawi_pipeline_events_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "rawi_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rawi_runs: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          id: string
+          language: string
+          research_output: Json | null
+          retry_count: number
+          script: Json | null
+          status: string
+          topic: string | null
+          topic_output: Json | null
+          triggered_by: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          language?: string
+          research_output?: Json | null
+          retry_count?: number
+          script?: Json | null
+          status?: string
+          topic?: string | null
+          topic_output?: Json | null
+          triggered_by?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          language?: string
+          research_output?: Json | null
+          retry_count?: number
+          script?: Json | null
+          status?: string
+          topic?: string | null
+          topic_output?: Json | null
+          triggered_by?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       reddit_api_log: {
         Row: {
           caller: string
@@ -1922,28 +2179,49 @@ export type Database = {
           approval_notes: string | null
           approved_at: string | null
           buyer_intent_keywords: Json | null
+          cluster_id: string | null
+          cluster_size: number | null
+          cluster_theme: string | null
           competitor_checked_at: string | null
           competitor_count: number | null
           competitor_exits_exist: boolean | null
           competitor_revenue_signals: Json | null
+          competitors: Json | null
+          complaint_type: string | null
+          composite_score: number | null
+          concentration_score: number | null
           created_at: string | null
           demand_confidence: string
           description: string | null
+          discovery_tier: string | null
+          distribution_score: number | null
+          distribution_tier: string | null
           embedding: Json | null
+          estimated_arpa: number | null
           first_seen_at: string | null
+          fit_reason: string | null
+          gap_evidence: Json | null
+          gap_score: number | null
           id: string
           independent_signals: number
           is_approved: boolean | null
           is_stale: boolean
           last_seen_at: string | null
+          model_channel_fit: boolean | null
+          pain_keywords: Json | null
           pain_score: number
           playbook_generated_at: string | null
           playbook_text: string | null
           source: string | null
           sources_seen: Json | null
+          spend_checked_at: string | null
+          spend_evidence: Json | null
+          spend_score: number | null
+          stage: string | null
           title: string
           trend_checked_at: string | null
           trend_direction: string | null
+          trend_evidence: Json | null
           trend_score: number | null
           validation_count: number
           validation_score: number | null
@@ -1954,28 +2232,49 @@ export type Database = {
           approval_notes?: string | null
           approved_at?: string | null
           buyer_intent_keywords?: Json | null
+          cluster_id?: string | null
+          cluster_size?: number | null
+          cluster_theme?: string | null
           competitor_checked_at?: string | null
           competitor_count?: number | null
           competitor_exits_exist?: boolean | null
           competitor_revenue_signals?: Json | null
+          competitors?: Json | null
+          complaint_type?: string | null
+          composite_score?: number | null
+          concentration_score?: number | null
           created_at?: string | null
           demand_confidence?: string
           description?: string | null
+          discovery_tier?: string | null
+          distribution_score?: number | null
+          distribution_tier?: string | null
           embedding?: Json | null
+          estimated_arpa?: number | null
           first_seen_at?: string | null
+          fit_reason?: string | null
+          gap_evidence?: Json | null
+          gap_score?: number | null
           id?: string
           independent_signals?: number
           is_approved?: boolean | null
           is_stale?: boolean
           last_seen_at?: string | null
+          model_channel_fit?: boolean | null
+          pain_keywords?: Json | null
           pain_score?: number
           playbook_generated_at?: string | null
           playbook_text?: string | null
           source?: string | null
           sources_seen?: Json | null
+          spend_checked_at?: string | null
+          spend_evidence?: Json | null
+          spend_score?: number | null
+          stage?: string | null
           title: string
           trend_checked_at?: string | null
           trend_direction?: string | null
+          trend_evidence?: Json | null
           trend_score?: number | null
           validation_count?: number
           validation_score?: number | null
@@ -1986,28 +2285,49 @@ export type Database = {
           approval_notes?: string | null
           approved_at?: string | null
           buyer_intent_keywords?: Json | null
+          cluster_id?: string | null
+          cluster_size?: number | null
+          cluster_theme?: string | null
           competitor_checked_at?: string | null
           competitor_count?: number | null
           competitor_exits_exist?: boolean | null
           competitor_revenue_signals?: Json | null
+          competitors?: Json | null
+          complaint_type?: string | null
+          composite_score?: number | null
+          concentration_score?: number | null
           created_at?: string | null
           demand_confidence?: string
           description?: string | null
+          discovery_tier?: string | null
+          distribution_score?: number | null
+          distribution_tier?: string | null
           embedding?: Json | null
+          estimated_arpa?: number | null
           first_seen_at?: string | null
+          fit_reason?: string | null
+          gap_evidence?: Json | null
+          gap_score?: number | null
           id?: string
           independent_signals?: number
           is_approved?: boolean | null
           is_stale?: boolean
           last_seen_at?: string | null
+          model_channel_fit?: boolean | null
+          pain_keywords?: Json | null
           pain_score?: number
           playbook_generated_at?: string | null
           playbook_text?: string | null
           source?: string | null
           sources_seen?: Json | null
+          spend_checked_at?: string | null
+          spend_evidence?: Json | null
+          spend_score?: number | null
+          stage?: string | null
           title?: string
           trend_checked_at?: string | null
           trend_direction?: string | null
+          trend_evidence?: Json | null
           trend_score?: number | null
           validation_count?: number
           validation_score?: number | null
