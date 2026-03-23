@@ -39,17 +39,28 @@ export default function Dashboard() {
   const primaryProduct = products[0] || null;
   const primaryProductId = primaryProduct?.id || null;
 
+  // Detect if the newest product was just created (within last 10 min) — enables polling
+  const isNewProduct = React.useMemo(() => {
+    if (!primaryProduct?.created_at) return false;
+    const ageMs = Date.now() - new Date(primaryProduct.created_at).getTime();
+    return ageMs < 10 * 60 * 1000;
+  }, [primaryProduct?.created_at]);
+
   // Fetch lead metrics for the primary product
   const {
     data: metrics = { total: 0, hotLeads: 0, avgScore: 0, newThisWeek: 0 },
   } = useLeadMetrics(primaryProductId);
 
   // Fetch top 5 leads sorted by intent_score
+  // Poll every 10s while product is fresh and has no leads yet
   const { data: allLeads = [], isLoading: isLoadingLeads } = useLeads({
     productId: primaryProductId,
     statusFilter: "Show All",
     timeFilter: "All Time",
+    refetchInterval: isNewProduct ? 10000 : false,
   });
+
+  const isScanning = isNewProduct && allLeads.length === 0 && !isLoadingLeads;
 
   const topLeads = React.useMemo(() => {
     return [...allLeads]
@@ -107,6 +118,23 @@ export default function Dashboard() {
             </p>
           )}
         </div>
+
+        {/* SCANNING BANNER — shown while new product has no leads yet */}
+        {isScanning && (
+          <div className="flex items-start gap-3 px-5 py-4 rounded-xl bg-orange-50 border border-orange-100">
+            <Loader2 className="w-4 h-4 animate-spin text-[#C2410C] shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-semibold text-orange-900">
+                Your agent is live — scanning Reddit right now.
+              </p>
+              <p className="text-xs text-orange-700 mt-0.5">
+                Reading the last 30 days of posts across your target
+                communities. First leads arrive in about 2 minutes — this page
+                updates automatically.
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* 2. THE VITALS (Stats Grid) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
