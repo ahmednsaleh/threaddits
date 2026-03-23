@@ -1,22 +1,23 @@
 
 
-## Fix: Sign Out Button on "Where Should We Hunt?" Page
+## Fix Build Error + Rename & Wire Up Evolution Panels
 
-### Root Cause
-The sign-out button in `OnboardingFlow.tsx` (line 405-411) bypasses the `useAuth` context and directly imports `supabase.auth.signOut()`. It then immediately calls `navigate("/")` before the auth state change propagates through the context, creating a race condition where the user appears still logged in after navigation.
+### Changes
 
-### Fix
-**File: `src/components/OnboardingFlow.tsx`** — Replace the inline dynamic import with the `signOut` function from `useAuth()` (which is already available in the component), and `await` it before navigating:
+**1. `src/pages/Dashboard.tsx` — Rename "Product Evolution" to "System Evolution"**
+Line 501: Change the heading text from `Product Evolution` to `System Evolution`. Single string change.
 
-```tsx
-onClick={async () => {
-  await signOut();
-  navigate("/");
-}}
-```
+**2. `src/pages/EditProductPage.tsx` — Wire up "Product Evolution" with real data**
+Replace the placeholder (lines 686-700) with a working panel that fetches from `system_actions` filtered by the current product ID.
 
-This ensures the Supabase session is fully cleared before redirecting. The `signOut` from `useAuth` is the canonical way to sign out across the app and triggers PostHog reset as well.
+- Add imports: `useQuery` from tanstack, `supabase`, `formatTimeAgo`, and icons (`ArrowUp`, `ArrowDown`, `TrendingDown`, `TrendingUp`, `CheckCircle2`, `RefreshCw`, `PlusCircle`)
+- Add a `useQuery` call fetching `system_actions` where `product_id = id`, ordered by `executed_at desc`, limit 15
+- Replace the placeholder div with the same event-list rendering logic from Dashboard (icon mapping by `action_type`, label formatting, time ago display) — but without the product name badge since we're already on a single product page
 
-### Scope
-Single file change, ~5 lines modified in `src/components/OnboardingFlow.tsx`.
+### Files Changed
+- `src/pages/Dashboard.tsx` — 1 line rename
+- `src/pages/EditProductPage.tsx` — add imports + query + event list UI (~80 lines)
+
+### Note
+The `useLeads.ts` fix (adding `refetchInterval`) was already applied in the last diff, so no further changes needed there.
 
