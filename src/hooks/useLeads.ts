@@ -75,7 +75,6 @@ export function useLeads({
       statusFilter,
       timeFilter,
       searchQuery,
-      subscriptionTier,
     ],
     queryFn: async (): Promise<Lead[]> => {
       if (!user?.id || !productId) return [];
