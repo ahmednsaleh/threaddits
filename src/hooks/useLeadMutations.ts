@@ -10,11 +10,10 @@ export function useUpdateLeadStatus() {
   return useMutation({
     mutationFn: async ({ leadId, status }: { leadId: string; status: string }) => {
       if (!user?.id) throw new Error('Not authenticated');
-      const { error } = await supabase
-        .from('leads')
-        .update({ status, updated_at: new Date().toISOString() })
-        .eq('id', leadId)
-        .eq('user_id', user.id);
+      const { error } = await supabase.rpc('update_lead_status', {
+        p_lead_id: leadId,
+        p_status: status,
+      });
 
       if (error) throw error;
     },
