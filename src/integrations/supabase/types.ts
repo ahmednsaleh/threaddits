@@ -3394,8 +3394,6 @@ export type Database = {
         }
         Returns: undefined
       }
-      show_limit: { Args: never; Returns: number }
-      show_trgm: { Args: { "": string }; Returns: string[] }
       update_circuit_breaker: {
         Args: { p_api_name: string; p_success: boolean }
         Returns: undefined
