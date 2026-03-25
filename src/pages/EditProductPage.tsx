@@ -626,7 +626,12 @@ export default function EditProductPage() {
                           {kw.keyword}
                         </div>
                         <div className="col-span-4 md:col-span-3">
-                          <TierBadge tier={kw.status} />
+                          <TierBadge tier={
+                            kw.status === 'learning' ? 'learning'
+                            : kw.impressions === 0 && kw.leads_found === 0 ? 'not_scanned'
+                            : kw.leads_found === 0 ? 'low_signal'
+                            : 'active'
+                          } />
                         </div>
                         <div className="col-span-3 hidden md:block">
                           {kw.status === "learning" ? (
