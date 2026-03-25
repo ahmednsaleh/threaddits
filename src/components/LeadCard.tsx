@@ -367,16 +367,6 @@ export const LeadCard: React.FC<LeadCardProps> = ({
           ) : (
             <span>{time_ago}</span>
           )}
-          <span className="text-slate-300 hidden sm:inline">•</span>
-          <a
-            href={post_url}
-            target="_blank"
-            rel="noreferrer"
-            className="hover:text-[#C2410C] flex items-center gap-1 transition-colors group/link ml-auto sm:ml-0"
-          >
-            <ExternalLink className="w-3 h-3 group-hover/link:stroke-[#C2410C]" />{" "}
-            Open Thread
-          </a>
         </div>
       </div>
 
