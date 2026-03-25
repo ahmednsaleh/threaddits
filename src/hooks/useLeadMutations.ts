@@ -35,16 +35,10 @@ export function useUpdateLeadFeedback() {
   return useMutation({
     mutationFn: async ({ leadId, feedback, postUrl, productId }: { leadId: string; feedback: 'good' | 'bad'; postUrl?: string; productId?: string }) => {
       if (!user?.id) throw new Error('Not authenticated');
-      const { error } = await supabase
-        .from('leads')
-        .update({
-          user_feedback: feedback,
-          updated_at: new Date().toISOString(),
-          // If bad lead, also mark as rejected
-          ...(feedback === 'bad' ? { status: 'Rejected' } : {})
-        })
-        .eq('id', leadId)
-        .eq('user_id', user.id);
+      const { error } = await supabase.rpc('update_lead_feedback', {
+        p_lead_id: leadId,
+        p_feedback: feedback,
+      });
 
       if (error) throw error;
 
