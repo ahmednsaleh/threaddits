@@ -51,7 +51,7 @@ export interface LeadCardProps {
   post_url?: string;
   noAnimation?: boolean;
   draft?: { id: string; draft_text: string } | null;
-  user_feedback?: string | null;
+  userFeedback?: string | null;
 }
 
 const renderHighlightedSummary = (text: string, competitors: string) => {
