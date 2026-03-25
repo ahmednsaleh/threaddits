@@ -62,6 +62,7 @@ const TierBadge = ({ tier }: { tier: string }) => {
     active: "bg-emerald-50 text-emerald-700 border-emerald-100",
     learning: "bg-amber-50 text-amber-700 border-amber-100",
     low_signal: "bg-slate-50 text-slate-500 border-slate-200",
+    not_scanned: "bg-amber-50 text-amber-600 border-amber-100",
   };
 
   const labels: Record<string, string> = {
@@ -72,6 +73,7 @@ const TierBadge = ({ tier }: { tier: string }) => {
     active: "Active",
     learning: "Learning",
     low_signal: "Low Signal",
+    not_scanned: "Not Scanned",
   };
 
   return (
@@ -624,7 +626,12 @@ export default function EditProductPage() {
                           {kw.keyword}
                         </div>
                         <div className="col-span-4 md:col-span-3">
-                          <TierBadge tier={kw.status} />
+                          <TierBadge tier={
+                            kw.status === 'learning' ? 'learning'
+                            : kw.impressions === 0 && kw.leads_found === 0 ? 'not_scanned'
+                            : kw.leads_found === 0 ? 'low_signal'
+                            : 'active'
+                          } />
                         </div>
                         <div className="col-span-3 hidden md:block">
                           {kw.status === "learning" ? (
