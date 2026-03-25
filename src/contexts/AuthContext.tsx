@@ -73,6 +73,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const signOut = async () => {
+    if (!supabase?.auth) {
+      console.error("Supabase auth client is not available.");
+      return;
+    }
     await supabase.auth.signOut();
   };
 

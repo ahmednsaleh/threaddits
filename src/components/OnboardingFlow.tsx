@@ -404,8 +404,14 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
           {user && (
             <button
               onClick={async () => {
-                await signOut();
-                navigate("/");
+                try {
+                  await signOut();
+                  navigate("/");
+                } catch (error) {
+                  console.error("Sign out failed:", error);
+                  localStorage.clear();
+                  navigate("/");
+                }
               }}
               className="mt-8 text-sm text-slate-400 hover:text-slate-600 transition-colors"
             >
