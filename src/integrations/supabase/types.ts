@@ -1270,6 +1270,30 @@ export type Database = {
           },
         ]
       }
+      maal_budget_alerts: {
+        Row: {
+          category: string
+          fired_at: string
+          id: string
+          month: string
+          threshold: string
+        }
+        Insert: {
+          category: string
+          fired_at?: string
+          id?: string
+          month: string
+          threshold: string
+        }
+        Update: {
+          category?: string
+          fired_at?: string
+          id?: string
+          month?: string
+          threshold?: string
+        }
+        Relationships: []
+      }
       maal_budgets: {
         Row: {
           category: string
@@ -2178,6 +2202,7 @@ export type Database = {
           addressability_score: number | null
           approval_notes: string | null
           approved_at: string | null
+          below_threshold_cycles: number | null
           buildability_score: number | null
           buyer_intent_keywords: Json | null
           cluster_id: string | null
@@ -2191,8 +2216,12 @@ export type Database = {
           complaint_type: string | null
           composite_score: number | null
           concentration_score: number | null
+          council_override: string | null
+          council_run_at: string | null
           created_at: string | null
+          deep_research_report: string | null
           demand_confidence: string
+          demand_density_score: number | null
           description: string | null
           discovery_tier: string | null
           distribution_score: number | null
@@ -2209,8 +2238,10 @@ export type Database = {
           is_approved: boolean | null
           is_stale: boolean
           last_seen_at: string | null
+          llm_scores: Json | null
           moat_score: number | null
           model_channel_fit: boolean | null
+          opus_verdict: string | null
           pain_keywords: Json | null
           pain_score: number
           playbook_generated_at: string | null
@@ -2234,6 +2265,7 @@ export type Database = {
           addressability_score?: number | null
           approval_notes?: string | null
           approved_at?: string | null
+          below_threshold_cycles?: number | null
           buildability_score?: number | null
           buyer_intent_keywords?: Json | null
           cluster_id?: string | null
@@ -2247,8 +2279,12 @@ export type Database = {
           complaint_type?: string | null
           composite_score?: number | null
           concentration_score?: number | null
+          council_override?: string | null
+          council_run_at?: string | null
           created_at?: string | null
+          deep_research_report?: string | null
           demand_confidence?: string
+          demand_density_score?: number | null
           description?: string | null
           discovery_tier?: string | null
           distribution_score?: number | null
@@ -2265,8 +2301,10 @@ export type Database = {
           is_approved?: boolean | null
           is_stale?: boolean
           last_seen_at?: string | null
+          llm_scores?: Json | null
           moat_score?: number | null
           model_channel_fit?: boolean | null
+          opus_verdict?: string | null
           pain_keywords?: Json | null
           pain_score?: number
           playbook_generated_at?: string | null
@@ -2290,6 +2328,7 @@ export type Database = {
           addressability_score?: number | null
           approval_notes?: string | null
           approved_at?: string | null
+          below_threshold_cycles?: number | null
           buildability_score?: number | null
           buyer_intent_keywords?: Json | null
           cluster_id?: string | null
@@ -2303,8 +2342,12 @@ export type Database = {
           complaint_type?: string | null
           composite_score?: number | null
           concentration_score?: number | null
+          council_override?: string | null
+          council_run_at?: string | null
           created_at?: string | null
+          deep_research_report?: string | null
           demand_confidence?: string
+          demand_density_score?: number | null
           description?: string | null
           discovery_tier?: string | null
           distribution_score?: number | null
@@ -2321,8 +2364,10 @@ export type Database = {
           is_approved?: boolean | null
           is_stale?: boolean
           last_seen_at?: string | null
+          llm_scores?: Json | null
           moat_score?: number | null
           model_channel_fit?: boolean | null
+          opus_verdict?: string | null
           pain_keywords?: Json | null
           pain_score?: number
           playbook_generated_at?: string | null

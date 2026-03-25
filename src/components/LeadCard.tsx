@@ -367,16 +367,6 @@ export const LeadCard: React.FC<LeadCardProps> = ({
           ) : (
             <span>{time_ago}</span>
           )}
-          <span className="text-slate-300 hidden sm:inline">•</span>
-          <a
-            href={post_url}
-            target="_blank"
-            rel="noreferrer"
-            className="hover:text-[#C2410C] flex items-center gap-1 transition-colors group/link ml-auto sm:ml-0"
-          >
-            <ExternalLink className="w-3 h-3 group-hover/link:stroke-[#C2410C]" />{" "}
-            Open Thread
-          </a>
         </div>
       </div>
 
@@ -473,49 +463,59 @@ export const LeadCard: React.FC<LeadCardProps> = ({
         </div>
 
         {/* Right: Action Button */}
-        {!isDraftVisible ? (
+        <div className="flex items-center gap-2">
           <Button
-            onClick={handleDraftToggle}
-            className={cn(
-              "bg-[#C2410C] hover:bg-[#A3360A] text-white rounded-full h-10 px-6 font-bold text-sm shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5",
-              isDrafting &&
-                "bg-slate-100 text-slate-400 hover:bg-slate-100 hover:translate-y-0 shadow-none",
-            )}
-            disabled={isDrafting}
+            variant="outline"
+            onClick={() => window.open(post_url, '_blank', 'noreferrer')}
+            className="rounded-full h-10 px-5 font-bold text-sm border-slate-200 text-slate-700 hover:bg-slate-50"
           >
-            {isDrafting ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Drafting...
-              </>
-            ) : (
-              <>
-                <Zap className="w-4 h-4 mr-2 fill-white" /> Draft Reply
-              </>
-            )}
+            <ExternalLink className="w-4 h-4 mr-2" /> Open Thread
           </Button>
-        ) : (
-          <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-4 w-full sm:w-auto">
+
+          {!isDraftVisible ? (
             <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsDraftVisible(false)}
-              className="text-slate-500 hover:text-slate-800"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleCopy}
-              className="bg-slate-900 text-white rounded-full h-9 px-4 font-bold text-xs"
-            >
-              {copied ? (
-                <Check className="w-3 h-3 mr-2" />
-              ) : (
-                <Copy className="w-3 h-3 mr-2" />
+              onClick={handleDraftToggle}
+              className={cn(
+                "bg-[#C2410C] hover:bg-[#A3360A] text-white rounded-full h-10 px-6 font-bold text-sm shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5",
+                isDrafting &&
+                  "bg-slate-100 text-slate-400 hover:bg-slate-100 hover:translate-y-0 shadow-none",
               )}
-              {copied ? "Copied" : "Copy"}
+              disabled={isDrafting}
+            >
+              {isDrafting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Drafting...
+                </>
+              ) : (
+                <>
+                  <Zap className="w-4 h-4 mr-2 fill-white" /> Draft Reply
+                </>
+              )}
             </Button>
-          </div>
-        )}
+          ) : (
+            <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsDraftVisible(false)}
+                className="text-slate-500 hover:text-slate-800"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleCopy}
+                className="bg-slate-900 text-white rounded-full h-9 px-4 font-bold text-xs"
+              >
+                {copied ? (
+                  <Check className="w-3 h-3 mr-2" />
+                ) : (
+                  <Copy className="w-3 h-3 mr-2" />
+                )}
+                {copied ? "Copied" : "Copy"}
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* AI Draft Area (Conditional) */}
