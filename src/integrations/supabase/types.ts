@@ -3447,6 +3447,14 @@ export type Database = {
         Args: { p_api_name: string; p_success: boolean }
         Returns: undefined
       }
+      update_lead_feedback: {
+        Args: { p_feedback: string; p_lead_id: string }
+        Returns: undefined
+      }
+      update_lead_status: {
+        Args: { p_lead_id: string; p_status: string }
+        Returns: undefined
+      }
       update_subreddit_performance: {
         Args: { target_product_id: string }
         Returns: undefined
