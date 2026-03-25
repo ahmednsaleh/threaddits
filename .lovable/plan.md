@@ -1,66 +1,86 @@
 
 
-# Fix Incorrect Lead Count on Dashboard
+# Fix "Bad Lead" Not Setting Status to Rejected
 
 ## Problem
 
-The `get_lead_metrics_for_user` RPC (created in the last migration) counts **all** leads with `intent_score >= 7` without applying the subscription tier limit. Meanwhile, the leads feed RPC (`get_leads_for_user`) caps free-tier users to 10 leads. This causes the dashboard to show 57 while only 10 are actually visible.
-
-## Root Cause
-
-Both `get_leads_for_user` and `get_leads_count_for_user` check the user's `subscription_tier` and cap results at 10 for free users. The new metrics RPC skips this check entirely.
+When clicking "Bad Lead", the mutation does a direct `.update()` on the `leads` table. However, the `leads` table has a SELECT RLS policy `USING (false)` that blocks all direct reads. Since PostgreSQL UPDATE requires SELECT visibility first, the update silently affects 0 rows — the status never changes to "Rejected" and the feedback is never saved.
 
 ## Fix
 
-Update `get_lead_metrics_for_user` to apply the same tier-based limit:
+Create a new `SECURITY DEFINER` RPC that handles the bad-lead flow atomically:
+
+1. Updates `user_feedback` and `status` on the `leads` table (bypassing RLS)
+2. Also records the feedback in the `lead_feedback` table for consistency
+
+Then update `useUpdateLeadFeedback` to call this RPC instead of doing a direct `.update()`.
+
+### Step 1: New migration — create `update_lead_feedback` RPC
 
 ```sql
-CREATE OR REPLACE FUNCTION public.get_lead_metrics_for_user(p_product_id uuid)
-RETURNS jsonb ...
+CREATE OR REPLACE FUNCTION public.update_lead_feedback(
+  p_lead_id uuid,
+  p_feedback text  -- 'good' or 'bad'
+)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path TO 'public'
 AS $$
-DECLARE
-  user_tier text;
-  effective_limit int;
-  ...
 BEGIN
-  SELECT subscription_tier INTO user_tier
-  FROM public.users WHERE id = auth.uid();
-
-  IF user_tier IS NULL OR user_tier NOT IN ('starter', 'pro') THEN
-    effective_limit := 10;
-  ELSE
-    effective_limit := 999999;
-  END IF;
-
-  -- Compute metrics only over the leads the user can actually see
-  WITH visible_leads AS (
-    SELECT intent_score, created_at
-    FROM public.leads
-    WHERE user_id = auth.uid()
-      AND product_id = p_product_id
-      AND intent_score >= 7
-    ORDER BY created_at DESC
-    LIMIT effective_limit
-  )
-  SELECT COUNT(*),
-         COUNT(*) FILTER (WHERE intent_score >= 9),
-         COALESCE(AVG(intent_score), 0),
-         COUNT(*) FILTER (WHERE created_at >= now() - interval '7 days')
-  INTO v_total, v_hot, v_avg, v_new_week
-  FROM visible_leads;
-
-  RETURN jsonb_build_object(...);
+  UPDATE public.leads
+  SET user_feedback = p_feedback,
+      status = CASE WHEN p_feedback = 'bad' THEN 'Rejected' ELSE status END,
+      updated_at = now()
+  WHERE id = p_lead_id
+    AND user_id = auth.uid();
 END;
 $$;
 ```
 
-Also align the `intent_score` threshold: the metrics RPC uses `>= 7` but the feed uses `>= 6`. Both should use `>= 6` for consistency (the feed shows score 6+ leads, so metrics should count them too).
+### Step 2: Update `useUpdateLeadFeedback` in `src/hooks/useLeadMutations.ts`
+
+Replace the direct `.from('leads').update(...)` call with:
+
+```typescript
+await supabase.rpc('update_lead_feedback', {
+  p_lead_id: leadId,
+  p_feedback: feedback,
+});
+```
+
+Keep the existing `reject-lead` edge function call for bad leads (embedding generation).
+
+### Step 3: Also fix `useUpdateLeadStatus`
+
+The same RLS issue affects the status dropdown (New → Contacted → Won → Rejected). Create a matching RPC:
+
+```sql
+CREATE OR REPLACE FUNCTION public.update_lead_status(
+  p_lead_id uuid,
+  p_status text
+)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path TO 'public'
+AS $$
+BEGIN
+  UPDATE public.leads
+  SET status = p_status, updated_at = now()
+  WHERE id = p_lead_id AND user_id = auth.uid();
+END;
+$$;
+```
+
+Update `useUpdateLeadStatus` to use `supabase.rpc('update_lead_status', ...)`.
 
 ## Files Modified
 
-- **New migration**: Replace `get_lead_metrics_for_user` with tier-aware version
+- **New migration**: `update_lead_feedback` + `update_lead_status` RPCs
+- **`src/hooks/useLeadMutations.ts`**: Both mutations switch from direct table updates to RPC calls
 
 ## Result
 
-Dashboard numbers will match what the user actually sees in their feed (10 leads for free tier).
+Clicking "Bad Lead" will correctly set status to "Rejected" and save feedback. The status dropdown will also work reliably.
 
