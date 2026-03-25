@@ -73,6 +73,7 @@ const TierBadge = ({ tier }: { tier: string }) => {
     active: "Active",
     learning: "Learning",
     low_signal: "Low Signal",
+    not_scanned: "Not Scanned",
   };
 
   return (
