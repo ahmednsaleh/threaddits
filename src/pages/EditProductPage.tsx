@@ -614,11 +614,11 @@ export default function EditProductPage() {
                     </div>
                   </div>
 
-                  <div className="divide-y divide-slate-100">
+                  <div>
                     {keywords.map((kw) => (
                       <div
-                        key={kw.id}
-                        className="grid grid-cols-12 px-6 py-3 items-center hover:bg-slate-50 transition-colors group"
+                        key={`keyword-${kw.id}-${kw.keyword}`}
+                        className="grid grid-cols-12 px-6 py-3 items-center hover:bg-slate-50 transition-colors group border-b border-slate-100 last:border-b-0"
                       >
                         <div className="col-span-4 md:col-span-5 font-bold text-slate-700 text-sm">
                           {kw.keyword}

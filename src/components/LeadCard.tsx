@@ -51,7 +51,7 @@ export interface LeadCardProps {
   post_url?: string;
   noAnimation?: boolean;
   draft?: { id: string; draft_text: string } | null;
-  user_feedback?: string | null;
+  userFeedback?: string | null;
 }
 
 const renderHighlightedSummary = (text: string, competitors: string) => {
@@ -115,7 +115,7 @@ export const LeadCard: React.FC<LeadCardProps> = ({
   post_url = "https://reddit.com",
   noAnimation = false,
   draft = null,
-  user_feedback: userFeedback = null,
+  userFeedback = null,
 }) => {
   const [isDraftVisible, setIsDraftVisible] = React.useState(false);
   const [isDrafting, setIsDrafting] = React.useState(false);
