@@ -62,6 +62,7 @@ const TierBadge = ({ tier }: { tier: string }) => {
     active: "bg-emerald-50 text-emerald-700 border-emerald-100",
     learning: "bg-amber-50 text-amber-700 border-amber-100",
     low_signal: "bg-slate-50 text-slate-500 border-slate-200",
+    not_scanned: "bg-amber-50 text-amber-600 border-amber-100",
   };
 
   const labels: Record<string, string> = {
