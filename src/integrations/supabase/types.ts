@@ -2178,6 +2178,7 @@ export type Database = {
           addressability_score: number | null
           approval_notes: string | null
           approved_at: string | null
+          buildability_score: number | null
           buyer_intent_keywords: Json | null
           cluster_id: string | null
           cluster_size: number | null
@@ -2200,6 +2201,7 @@ export type Database = {
           estimated_arpa: number | null
           first_seen_at: string | null
           fit_reason: string | null
+          founder_fit_score: number | null
           gap_evidence: Json | null
           gap_score: number | null
           id: string
@@ -2207,6 +2209,7 @@ export type Database = {
           is_approved: boolean | null
           is_stale: boolean
           last_seen_at: string | null
+          moat_score: number | null
           model_channel_fit: boolean | null
           pain_keywords: Json | null
           pain_score: number
@@ -2231,6 +2234,7 @@ export type Database = {
           addressability_score?: number | null
           approval_notes?: string | null
           approved_at?: string | null
+          buildability_score?: number | null
           buyer_intent_keywords?: Json | null
           cluster_id?: string | null
           cluster_size?: number | null
@@ -2253,6 +2257,7 @@ export type Database = {
           estimated_arpa?: number | null
           first_seen_at?: string | null
           fit_reason?: string | null
+          founder_fit_score?: number | null
           gap_evidence?: Json | null
           gap_score?: number | null
           id?: string
@@ -2260,6 +2265,7 @@ export type Database = {
           is_approved?: boolean | null
           is_stale?: boolean
           last_seen_at?: string | null
+          moat_score?: number | null
           model_channel_fit?: boolean | null
           pain_keywords?: Json | null
           pain_score?: number
@@ -2284,6 +2290,7 @@ export type Database = {
           addressability_score?: number | null
           approval_notes?: string | null
           approved_at?: string | null
+          buildability_score?: number | null
           buyer_intent_keywords?: Json | null
           cluster_id?: string | null
           cluster_size?: number | null
@@ -2306,6 +2313,7 @@ export type Database = {
           estimated_arpa?: number | null
           first_seen_at?: string | null
           fit_reason?: string | null
+          founder_fit_score?: number | null
           gap_evidence?: Json | null
           gap_score?: number | null
           id?: string
@@ -2313,6 +2321,7 @@ export type Database = {
           is_approved?: boolean | null
           is_stale?: boolean
           last_seen_at?: string | null
+          moat_score?: number | null
           model_channel_fit?: boolean | null
           pain_keywords?: Json | null
           pain_score?: number
