@@ -3243,6 +3243,10 @@ export type Database = {
       }
       get_gmail_cache: { Args: { p_cache_key: string }; Returns: Json }
       get_jira_cache: { Args: { p_cache_key: string }; Returns: Json }
+      get_lead_metrics_for_user: {
+        Args: { p_product_id: string }
+        Returns: Json
+      }
       get_leads_count_for_user: {
         Args: { p_min_intent_score?: number }
         Returns: number
