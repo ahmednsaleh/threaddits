@@ -1,19 +1,24 @@
 
 
-# Mark Resolved Security Findings
+# Move "Open Thread" next to "Draft Reply"
 
-All three remaining Supabase scan findings have already been fixed directly on the database. The plan is to update the security tracker to reflect this.
+## What changes
 
-## Actions
+1. **Remove** the "Open Thread" link from the title metadata row (lines 370-379)
+2. **Add** an "Open Thread" button in the footer actions area (next to "Draft Reply"), styled as an outline button with matching height (`h-10`, `rounded-full`) so it visually pairs with the primary CTA
+3. The button uses `window.open(post_url, '_blank', 'noreferrer')` on click — same behavior, just as a Button component
 
-1. **`SUPA_function_search_path_mutable`** — Already fixed (search_path added to `acquire_reddit_budget` and `get_brain_entries_in_range`). Mark as ignored with reason "Fixed — all custom functions now have search_path set. Remaining entries are pg_trgm internals moved to extensions schema."
+## Footer layout (after change)
 
-2. **`SUPA_extension_in_public`** — Already fixed (pg_trgm moved to extensions schema). Mark as ignored with reason "Fixed — pg_trgm moved to extensions schema."
+```text
+[Status Dropdown]                    [Open Thread]  [Draft Reply]
+```
 
-3. **`SUPA_rls_enabled_no_policy`** — Reminders table, accessed only via service_role (bots). Mark as ignored with reason "Reminders table is only accessed via service_role which bypasses RLS. No user-facing access exists."
+When draft is visible, the right side becomes:
+```text
+[Status Dropdown]                    [Open Thread]  [Cancel]  [Copy]
+```
 
-## Technical Details
-
-- No code changes or migrations needed — fixes were applied directly to the database
-- Use `security--manage_security_finding` to update each finding's status
+## Files modified
+- `src/components/LeadCard.tsx` — remove link from line ~370-379, add Button in footer section around line ~475
 
