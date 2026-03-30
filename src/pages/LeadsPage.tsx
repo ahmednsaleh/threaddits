@@ -503,10 +503,16 @@ export default function LeadsPage({
                       lead.relevance_summary || "No summary available"
                     }
                     problem_statement_detail={
-                      lead.problem_statement_detail || "Not specified"
+                      lead.problem_statement_detail || 
+                      lead.relevance_summary || 
+                      "Not specified"
                     }
                     urgency_signals_detail={
-                      lead.urgency_signals_detail || "Not specified"
+                      lead.urgency_signals_detail || 
+                      (lead.sentiment === 'Positive' ? 'Actively exploring solutions' :
+                       lead.sentiment === 'Negative' ? 'Frustrated — may act soon' :
+                       lead.buying_stage_detail === 'Research' ? 'Early research phase' :
+                       'Moderate')
                     }
                     competitors_mentioned={
                       lead.competitive_context_detail ||
@@ -527,11 +533,11 @@ export default function LeadsPage({
                         ?.toLowerCase()
                         .includes("immediate")
                         ? "High Urgency"
-                        : lead.urgency_signals_detail
-                              ?.toLowerCase()
-                              .includes("medium")
-                          ? "Medium Urgency"
-                          : "Low Urgency"
+                        : lead.sentiment === 'Negative'
+                          ? "High Urgency"
+                          : lead.sentiment === 'Positive'
+                            ? "Medium Urgency"
+                            : "Low Urgency"
                     }
                     status={lead.status}
                     product_name={activeProduct?.product_name || "Product"}
