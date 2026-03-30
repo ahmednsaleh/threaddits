@@ -14,11 +14,8 @@ Sentry.init({
   environment: import.meta.env.MODE,
   integrations: [
     Sentry.browserTracingIntegration(),
-    Sentry.replayIntegration(),
   ],
   tracesSampleRate: 0.1,
-  replaysSessionSampleRate: 0.1,
-  replaysOnErrorSampleRate: 1.0,
 });
 
 createRoot(document.getElementById("root")!).render(<App />);
