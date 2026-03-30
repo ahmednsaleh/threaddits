@@ -1060,32 +1060,79 @@ export type Database = {
       }
       lead_drafts: {
         Row: {
+          confidence: number | null
           created_at: string
+          direction: string | null
           draft_text: string
           id: string
           lead_id: string
+          product_mentioned: boolean | null
           status: string
           user_id: string
         }
         Insert: {
+          confidence?: number | null
           created_at?: string
+          direction?: string | null
           draft_text: string
           id?: string
           lead_id: string
+          product_mentioned?: boolean | null
           status?: string
           user_id: string
         }
         Update: {
+          confidence?: number | null
           created_at?: string
+          direction?: string | null
           draft_text?: string
           id?: string
           lead_id?: string
+          product_mentioned?: boolean | null
           status?: string
           user_id?: string
         }
         Relationships: [
           {
             foreignKeyName: "lead_drafts_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_engagement_events: {
+        Row: {
+          actor: string
+          created_at: string
+          from_status: string
+          id: string
+          lead_id: string
+          metadata: Json | null
+          to_status: string
+        }
+        Insert: {
+          actor?: string
+          created_at?: string
+          from_status: string
+          id?: string
+          lead_id: string
+          metadata?: Json | null
+          to_status: string
+        }
+        Update: {
+          actor?: string
+          created_at?: string
+          from_status?: string
+          id?: string
+          lead_id?: string
+          metadata?: Json | null
+          to_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_engagement_events_lead_id_fkey"
             columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "leads"
@@ -1159,15 +1206,25 @@ export type Database = {
           author: string
           buying_signal: string | null
           buying_stage_detail: string | null
+          closed_reason: string | null
           competitive_context_detail: string | null
           competitors_mentioned: string | null
+          contacted_at: string | null
           created_at: string | null
           created_utc: string | null
+          engagement_status: string | null
+          follow_up_sent_at: string | null
           id: string
           intent_score: number
           intent_type: string | null
           is_problem_focused: boolean | null
           is_solution_seeking: boolean | null
+          last_alerted_comment_count: number | null
+          last_checked_for_reply_at: string | null
+          last_reply_check_at: string | null
+          nudge_1h_sent_at: string | null
+          nudge_48h_sent_at: string | null
+          nudge_draft_sent_at: string | null
           objection_barrier: string | null
           pipeline_version: number | null
           post_age_hours: number | null
@@ -1178,6 +1235,7 @@ export type Database = {
           problem_statement_detail: string | null
           product_id: string | null
           relevance_summary: string | null
+          replied_at: string | null
           sentiment: string | null
           source_subreddit: string
           stage: string | null
@@ -1194,15 +1252,25 @@ export type Database = {
           author: string
           buying_signal?: string | null
           buying_stage_detail?: string | null
+          closed_reason?: string | null
           competitive_context_detail?: string | null
           competitors_mentioned?: string | null
+          contacted_at?: string | null
           created_at?: string | null
           created_utc?: string | null
+          engagement_status?: string | null
+          follow_up_sent_at?: string | null
           id?: string
           intent_score: number
           intent_type?: string | null
           is_problem_focused?: boolean | null
           is_solution_seeking?: boolean | null
+          last_alerted_comment_count?: number | null
+          last_checked_for_reply_at?: string | null
+          last_reply_check_at?: string | null
+          nudge_1h_sent_at?: string | null
+          nudge_48h_sent_at?: string | null
+          nudge_draft_sent_at?: string | null
           objection_barrier?: string | null
           pipeline_version?: number | null
           post_age_hours?: number | null
@@ -1213,6 +1281,7 @@ export type Database = {
           problem_statement_detail?: string | null
           product_id?: string | null
           relevance_summary?: string | null
+          replied_at?: string | null
           sentiment?: string | null
           source_subreddit: string
           stage?: string | null
@@ -1229,15 +1298,25 @@ export type Database = {
           author?: string
           buying_signal?: string | null
           buying_stage_detail?: string | null
+          closed_reason?: string | null
           competitive_context_detail?: string | null
           competitors_mentioned?: string | null
+          contacted_at?: string | null
           created_at?: string | null
           created_utc?: string | null
+          engagement_status?: string | null
+          follow_up_sent_at?: string | null
           id?: string
           intent_score?: number
           intent_type?: string | null
           is_problem_focused?: boolean | null
           is_solution_seeking?: boolean | null
+          last_alerted_comment_count?: number | null
+          last_checked_for_reply_at?: string | null
+          last_reply_check_at?: string | null
+          nudge_1h_sent_at?: string | null
+          nudge_48h_sent_at?: string | null
+          nudge_draft_sent_at?: string | null
           objection_barrier?: string | null
           pipeline_version?: number | null
           post_age_hours?: number | null
@@ -1248,6 +1327,7 @@ export type Database = {
           problem_statement_detail?: string | null
           product_id?: string | null
           relevance_summary?: string | null
+          replied_at?: string | null
           sentiment?: string | null
           source_subreddit?: string
           stage?: string | null
@@ -1533,6 +1613,152 @@ export type Database = {
           x_url?: string | null
         }
         Relationships: []
+      }
+      magd_linkedin_benchmarks: {
+        Row: {
+          discovered_at: string | null
+          follower_count: number | null
+          has_top_voice_badge: boolean | null
+          id: string
+          is_active: boolean | null
+          last_scraped_at: string | null
+          niche: string | null
+          profile_name: string | null
+          profile_url: string
+        }
+        Insert: {
+          discovered_at?: string | null
+          follower_count?: number | null
+          has_top_voice_badge?: boolean | null
+          id?: string
+          is_active?: boolean | null
+          last_scraped_at?: string | null
+          niche?: string | null
+          profile_name?: string | null
+          profile_url: string
+        }
+        Update: {
+          discovered_at?: string | null
+          follower_count?: number | null
+          has_top_voice_badge?: boolean | null
+          id?: string
+          is_active?: boolean | null
+          last_scraped_at?: string | null
+          niche?: string | null
+          profile_name?: string | null
+          profile_url?: string
+        }
+        Relationships: []
+      }
+      magd_linkedin_data: {
+        Row: {
+          about_section: string | null
+          created_at: string | null
+          engagement_metrics: Json | null
+          featured_posts: Json | null
+          follower_count: number | null
+          headline: string | null
+          id: string
+          profile_name: string | null
+          profile_type: string
+          profile_url: string
+          profile_views_count: number | null
+          scraped_at: string
+          skills_text: string | null
+        }
+        Insert: {
+          about_section?: string | null
+          created_at?: string | null
+          engagement_metrics?: Json | null
+          featured_posts?: Json | null
+          follower_count?: number | null
+          headline?: string | null
+          id?: string
+          profile_name?: string | null
+          profile_type: string
+          profile_url: string
+          profile_views_count?: number | null
+          scraped_at: string
+          skills_text?: string | null
+        }
+        Update: {
+          about_section?: string | null
+          created_at?: string | null
+          engagement_metrics?: Json | null
+          featured_posts?: Json | null
+          follower_count?: number | null
+          headline?: string | null
+          id?: string
+          profile_name?: string | null
+          profile_type?: string
+          profile_url?: string
+          profile_views_count?: number | null
+          scraped_at?: string
+          skills_text?: string | null
+        }
+        Relationships: []
+      }
+      magd_linkedin_suggestions: {
+        Row: {
+          approved_at: string | null
+          created_at: string | null
+          current_text: string | null
+          draft_id: string | null
+          id: string
+          impact_estimate: string | null
+          message_id: number | null
+          reasoning: string | null
+          report_sent_at: string | null
+          status: string | null
+          suggested_text: string | null
+          suggestion_index: number | null
+          suggestion_type: string
+          updated_at: string | null
+          week_number: number | null
+        }
+        Insert: {
+          approved_at?: string | null
+          created_at?: string | null
+          current_text?: string | null
+          draft_id?: string | null
+          id?: string
+          impact_estimate?: string | null
+          message_id?: number | null
+          reasoning?: string | null
+          report_sent_at?: string | null
+          status?: string | null
+          suggested_text?: string | null
+          suggestion_index?: number | null
+          suggestion_type: string
+          updated_at?: string | null
+          week_number?: number | null
+        }
+        Update: {
+          approved_at?: string | null
+          created_at?: string | null
+          current_text?: string | null
+          draft_id?: string | null
+          id?: string
+          impact_estimate?: string | null
+          message_id?: number | null
+          reasoning?: string | null
+          report_sent_at?: string | null
+          status?: string | null
+          suggested_text?: string | null
+          suggestion_index?: number | null
+          suggestion_type?: string
+          updated_at?: string | null
+          week_number?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "magd_linkedin_suggestions_draft_id_fkey"
+            columns: ["draft_id"]
+            isOneToOne: false
+            referencedRelation: "magd_drafts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       magd_posts: {
         Row: {
@@ -1847,6 +2073,7 @@ export type Database = {
           crawl_history: Json | null
           created_at: string
           discovery_attempts_count: number | null
+          follow_up_days: number
           id: string
           jobs_to_be_done: string | null
           keywords: Json | null
@@ -1873,6 +2100,7 @@ export type Database = {
           crawl_history?: Json | null
           created_at?: string
           discovery_attempts_count?: number | null
+          follow_up_days?: number
           id?: string
           jobs_to_be_done?: string | null
           keywords?: Json | null
@@ -1899,6 +2127,7 @@ export type Database = {
           crawl_history?: Json | null
           created_at?: string
           discovery_attempts_count?: number | null
+          follow_up_days?: number
           id?: string
           jobs_to_be_done?: string | null
           keywords?: Json | null
@@ -2178,6 +2407,51 @@ export type Database = {
         }
         Relationships: []
       }
+      rizq_council_verdicts: {
+        Row: {
+          avg_score: number | null
+          category: string | null
+          evaluated_at: string | null
+          first_action: string | null
+          id: string
+          idea_id: string | null
+          idea_title: string | null
+          kill_reason: string | null
+          kill_type: string | null
+          persona_scores: Json | null
+          verdict: string | null
+          weeks_to_1k: number | null
+        }
+        Insert: {
+          avg_score?: number | null
+          category?: string | null
+          evaluated_at?: string | null
+          first_action?: string | null
+          id?: string
+          idea_id?: string | null
+          idea_title?: string | null
+          kill_reason?: string | null
+          kill_type?: string | null
+          persona_scores?: Json | null
+          verdict?: string | null
+          weeks_to_1k?: number | null
+        }
+        Update: {
+          avg_score?: number | null
+          category?: string | null
+          evaluated_at?: string | null
+          first_action?: string | null
+          id?: string
+          idea_id?: string | null
+          idea_title?: string | null
+          kill_reason?: string | null
+          kill_type?: string | null
+          persona_scores?: Json | null
+          verdict?: string | null
+          weeks_to_1k?: number | null
+        }
+        Relationships: []
+      }
       rizq_health_snapshot: {
         Row: {
           created_at: string | null
@@ -2205,6 +2479,7 @@ export type Database = {
           below_threshold_cycles: number | null
           buildability_score: number | null
           buyer_intent_keywords: Json | null
+          category: string | null
           cluster_id: string | null
           cluster_size: number | null
           cluster_theme: string | null
@@ -2223,7 +2498,10 @@ export type Database = {
           demand_confidence: string
           demand_density_score: number | null
           description: string | null
+          dimension_scores: Json | null
           discovery_tier: string | null
+          distribution_channels: Json | null
+          distribution_gate: string | null
           distribution_score: number | null
           distribution_tier: string | null
           embedding: Json | null
@@ -2247,6 +2525,7 @@ export type Database = {
           playbook_generated_at: string | null
           playbook_text: string | null
           source: string | null
+          source_type: string | null
           sources_seen: Json | null
           spend_checked_at: string | null
           spend_evidence: Json | null
@@ -2268,6 +2547,7 @@ export type Database = {
           below_threshold_cycles?: number | null
           buildability_score?: number | null
           buyer_intent_keywords?: Json | null
+          category?: string | null
           cluster_id?: string | null
           cluster_size?: number | null
           cluster_theme?: string | null
@@ -2286,7 +2566,10 @@ export type Database = {
           demand_confidence?: string
           demand_density_score?: number | null
           description?: string | null
+          dimension_scores?: Json | null
           discovery_tier?: string | null
+          distribution_channels?: Json | null
+          distribution_gate?: string | null
           distribution_score?: number | null
           distribution_tier?: string | null
           embedding?: Json | null
@@ -2310,6 +2593,7 @@ export type Database = {
           playbook_generated_at?: string | null
           playbook_text?: string | null
           source?: string | null
+          source_type?: string | null
           sources_seen?: Json | null
           spend_checked_at?: string | null
           spend_evidence?: Json | null
@@ -2331,6 +2615,7 @@ export type Database = {
           below_threshold_cycles?: number | null
           buildability_score?: number | null
           buyer_intent_keywords?: Json | null
+          category?: string | null
           cluster_id?: string | null
           cluster_size?: number | null
           cluster_theme?: string | null
@@ -2349,7 +2634,10 @@ export type Database = {
           demand_confidence?: string
           demand_density_score?: number | null
           description?: string | null
+          dimension_scores?: Json | null
           discovery_tier?: string | null
+          distribution_channels?: Json | null
+          distribution_gate?: string | null
           distribution_score?: number | null
           distribution_tier?: string | null
           embedding?: Json | null
@@ -2373,6 +2661,7 @@ export type Database = {
           playbook_generated_at?: string | null
           playbook_text?: string | null
           source?: string | null
+          source_type?: string | null
           sources_seen?: Json | null
           spend_checked_at?: string | null
           spend_evidence?: Json | null
@@ -2946,12 +3235,45 @@ export type Database = {
         }
         Relationships: []
       }
+      telegram_link_tokens: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          token: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: string
+          token: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          token?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "telegram_link_tokens_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       users: {
         Row: {
           avatar_url: string | null
           email: string | null
           full_name: string | null
           id: string
+          last_digest_sent_at: string | null
           onboarding_complete: boolean | null
           product_url: string | null
           stripe_customer_id: string | null
@@ -2964,6 +3286,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id: string
+          last_digest_sent_at?: string | null
           onboarding_complete?: boolean | null
           product_url?: string | null
           stripe_customer_id?: string | null
@@ -2976,6 +3299,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          last_digest_sent_at?: string | null
           onboarding_complete?: boolean | null
           product_url?: string | null
           stripe_customer_id?: string | null
@@ -3262,15 +3586,25 @@ export type Database = {
           author: string
           buying_signal: string | null
           buying_stage_detail: string | null
+          closed_reason: string | null
           competitive_context_detail: string | null
           competitors_mentioned: string | null
+          contacted_at: string | null
           created_at: string | null
           created_utc: string | null
+          engagement_status: string | null
+          follow_up_sent_at: string | null
           id: string
           intent_score: number
           intent_type: string | null
           is_problem_focused: boolean | null
           is_solution_seeking: boolean | null
+          last_alerted_comment_count: number | null
+          last_checked_for_reply_at: string | null
+          last_reply_check_at: string | null
+          nudge_1h_sent_at: string | null
+          nudge_48h_sent_at: string | null
+          nudge_draft_sent_at: string | null
           objection_barrier: string | null
           pipeline_version: number | null
           post_age_hours: number | null
@@ -3281,6 +3615,7 @@ export type Database = {
           problem_statement_detail: string | null
           product_id: string | null
           relevance_summary: string | null
+          replied_at: string | null
           sentiment: string | null
           source_subreddit: string
           stage: string | null
