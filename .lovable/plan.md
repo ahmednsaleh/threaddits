@@ -1,33 +1,50 @@
 
 
-# Fix: Keywords Showing "Active" Even When Low Signal
+# Fix: Core Pain and Urgency Always Showing "Not specified"
 
-## Problem
-The keyword status badge (`TierBadge`) always shows "Active" because the `keyword_performance.status` column defaults to `'active'` and is never updated by the backend pipeline. Meanwhile, the Performance column correctly identifies low-signal keywords (impressions > 0 but leads_found = 0), creating a contradiction.
+## Root Cause
+
+The database has `problem_statement_detail` and `urgency_signals_detail` columns, but **the backend scoring pipeline never populates them** — they are NULL for every lead. The LeadCard falls back to "Not specified".
+
+Only `relevance_summary`, `buying_stage_detail`, and `sentiment` are populated by the pipeline.
 
 ## Solution
-Derive the display status client-side based on keyword metrics, rather than relying on the database `status` field that the backend never updates.
 
-### Changes to `src/pages/EditProductPage.tsx`
+Create a **backfill edge function** that uses AI (OpenAI) to extract `problem_statement_detail` and `urgency_signals_detail` from the existing `post_content` and `relevance_summary` for all leads where these fields are NULL. Then, also patch the **lead ingestion pipeline** so future leads get these fields populated at insert time.
 
-Compute a derived status for each keyword before rendering:
-- **`low_signal`** — impressions > 0 but leads_found === 0 (scanned, found nothing)
-- **`not_scanned`** — impressions === 0 and leads_found === 0 (never included in a crawl)
-- **`active`** — leads_found > 0 (producing results)
-- Keep original status if it's `learning`
+However, since the ingestion pipeline appears to be external (n8n), the most practical fix is:
 
-Replace line 627 (`<TierBadge tier={kw.status} />`) with a computed tier:
+**Option A — Client-side derivation (quick fix, no AI cost):**
+Derive sensible values from existing data when the fields are NULL:
+- **Core Pain**: Extract from `relevance_summary` (it usually describes the problem)
+- **Urgency**: Derive from `sentiment` + `buying_stage_detail` (e.g., "Research" + "Positive" → "Exploring options")
+
+This avoids showing "Not specified" and gives meaningful context using data that already exists.
+
+### Changes to `src/pages/LeadsPage.tsx`
+
+Update the LeadCard props to derive values when NULL:
+
+```typescript
+problem_statement_detail={
+  lead.problem_statement_detail || 
+  lead.relevance_summary || 
+  "Not specified"
+}
+urgency_signals_detail={
+  lead.urgency_signals_detail || 
+  (lead.sentiment === 'Positive' ? 'Actively exploring solutions' :
+   lead.sentiment === 'Negative' ? 'Frustrated — may act soon' :
+   lead.buying_stage_detail === 'Research' ? 'Early research phase' :
+   'Moderate')
+}
 ```
-tier = kw.status === 'learning' ? 'learning'
-     : kw.impressions === 0 && kw.leads_found === 0 ? 'not_scanned'
-     : kw.leads_found === 0 ? 'low_signal'
-     : 'active'
-```
 
-Add `not_scanned` to the `TierBadge` styles/labels:
-- Style: amber/yellow (like Learning)
-- Label: "Not Scanned"
+Also update the `sentiment` prop derivation to use the existing `sentiment` column directly when `urgency_signals_detail` is null.
 
-## Files Modified
-- **`src/pages/EditProductPage.tsx`** — Add computed status logic + `not_scanned` badge variant
+### File Modified
+- **`src/pages/LeadsPage.tsx`** — Smarter fallback logic for `problem_statement_detail` and `urgency_signals_detail` props
+
+## Result
+Core Pain will show the relevance summary (which describes the user's problem) instead of "Not specified". Urgency will show a derived signal based on sentiment and buying stage. No backend changes needed.
 
