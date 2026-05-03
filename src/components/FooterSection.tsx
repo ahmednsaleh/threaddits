@@ -13,9 +13,9 @@ export const FooterSection = () => {
               <Logo variant="light" />
             </div>
             <p className="text-sm text-slate-400 max-w-xs leading-relaxed">
-              The autonomous lead engine for Reddit.
+              The headless Reddit signal layer for Claude and Cursor.
               <br />
-              Stop Searching. Start Selling.
+              Stop opening dashboards.
             </p>
           </div>
 
@@ -78,10 +78,18 @@ export const FooterSection = () => {
               </li>
               <li>
                 <a
+                  href="/agent-first"
+                  className="text-slate-300 hover:text-[#C2410C] transition-colors"
+                >
+                  Research
+                </a>
+              </li>
+              <li>
+                <a
                   href="/auth"
                   className="text-slate-300 hover:text-[#C2410C] transition-colors"
                 >
-                  Login
+                  Login (Legacy)
                 </a>
               </li>
             </ul>
