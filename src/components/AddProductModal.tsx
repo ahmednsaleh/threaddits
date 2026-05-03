@@ -99,7 +99,7 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({
       const { data, error } = await supabase.functions.invoke(
         "extract-product-info",
         {
-          body: { url: url.trim() },
+          body: { product_url: url.trim() },
         },
       );
 
