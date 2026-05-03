@@ -65,6 +65,8 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({
     audience: "",
     primaryJob: "",
     painPoints: [] as string[],
+    subreddits: [] as string[],
+    keywords: [] as string[],
   });
   const [newPainPoint, setNewPainPoint] = useState("");
 
@@ -80,6 +82,8 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({
         audience: "",
         primaryJob: "",
         painPoints: [],
+        subreddits: [],
+        keywords: [],
       });
       setIsAnalyzing(false);
       setAnalysisError(null);
@@ -119,6 +123,8 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({
                 .map((s: string) => s.trim())
                 .filter(Boolean)
             : data?.painPoints || [],
+        subreddits: Array.isArray(data?.subreddits) ? data.subreddits : [],
+        keywords: Array.isArray(data?.keywords) ? data.keywords : [],
       });
       setIsAnalyzing(false);
       trackOnboardingEvent("analysis_complete", { url: url.trim() });
@@ -190,6 +196,8 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({
           product_url: url.trim() || null,
           business_type: "B2B",
           status: "active",
+          subreddits: formData.subreddits.length > 0 ? formData.subreddits : null,
+          keywords: formData.keywords.length > 0 ? formData.keywords : null,
         })
         .select("id")
         .single();
