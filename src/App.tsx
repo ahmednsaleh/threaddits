@@ -22,6 +22,7 @@ import BestRedditLeadGenTools from "./pages/blog/BestRedditLeadGenTools";
 import RedditLeadGenForSaas from "./pages/blog/RedditLeadGenForSaas";
 import { AppLayout } from "./components/AppLayout";
 import OnboardingPage from "./pages/OnboardingPage";
+import AgentFirstPage from "./pages/AgentFirstPage";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Homepage />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/agent-first" element={<AgentFirstPage />} />
               <Route path="/terms" element={<TermsPage />} />
               <Route path="/privacy" element={<PrivacyPage />} />
               <Route path="/blog" element={<BlogPage />} />

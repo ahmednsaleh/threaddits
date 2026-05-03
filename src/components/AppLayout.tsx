@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { AppSidebar } from "./AppSidebar";
+import { DeprecationBanner } from "./DeprecationBanner";
 import { cn } from "../lib/utils";
 import { Menu } from "lucide-react";
 import { Button } from "./ui/button";
@@ -70,6 +71,9 @@ export const AppLayout = () => {
 
   return (
     <div className="relative min-h-screen w-full bg-[#FAFAFA] flex flex-col md:flex-row">
+      {/* Deprecation Banner */}
+      <DeprecationBanner />
+
       {/* Static sidebar for desktop */}
       <AppSidebar className="hidden md:flex" />
 
