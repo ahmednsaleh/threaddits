@@ -235,8 +235,9 @@ export default function ProductsPage() {
   const queryClient = useQueryClient();
 
   const subscriptionTier =
-    userProfile?.subscription_tier?.toUpperCase() || "STARTER";
-  const isPro = subscriptionTier === "PRO";
+    userProfile?.subscription_tier?.toLowerCase() || "free";
+  const isPro = subscriptionTier === "pro";
+  const productLimit = isPro ? 3 : 1;
 
   const handleToggleStatus = (id: string) => {
     const product = products.find((p) => p.id === id);
@@ -276,9 +277,11 @@ export default function ProductsPage() {
   };
 
   const handleAddProduct = () => {
-    if (subscriptionTier === "STARTER" && products.length >= 1) {
+    if (products.length >= productLimit) {
       toast.error("Plan limit reached", {
-        description: "Upgrade to Pro ($29/mo) to add more products.",
+        description: isPro
+          ? `You've reached the Pro tier limit of ${productLimit} products.`
+          : "Upgrade to Pro ($29/mo) to add more products.",
       });
       return;
     }
@@ -343,7 +346,7 @@ export default function ProductsPage() {
             length: Math.max(0, SLOTS_COUNT - products.length),
           }).map((_, idx) => {
             const slotIndex = products.length + idx + 1;
-            const isLocked = subscriptionTier === "STARTER" && slotIndex > 1;
+            const isLocked = slotIndex > productLimit;
             return (
               <EmptySlot
                 key={`slot-${slotIndex}`}
