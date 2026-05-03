@@ -60,6 +60,7 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({
   // Form State (Review Step)
   const [formData, setFormData] = useState({
     name: "",
+    category: "",
     description: "",
     audience: "",
     primaryJob: "",
@@ -74,6 +75,7 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({
       setUrl("");
       setFormData({
         name: "",
+        category: "",
         description: "",
         audience: "",
         primaryJob: "",
@@ -105,6 +107,7 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({
 
       setFormData({
         name: data?.product_name || data?.name || "",
+        category: data?.product_category || "",
         description: data?.product_description || data?.description || "",
         audience:
           data?.persona || data?.audience || data?.target_audience || "",
@@ -179,6 +182,7 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({
         .insert({
           user_id: user.id,
           product_name: formData.name,
+          product_category: formData.category || null,
           product_description: formData.description,
           persona: formData.audience,
           pain_points_solved: formData.painPoints.join(", "),

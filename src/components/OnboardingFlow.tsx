@@ -154,6 +154,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
   // Review Form State
   const [formData, setFormData] = useState({
     productName: "",
+    productCategory: "",
     targetPersona: "",
     primaryJob: "",
     valueProposition: "",
@@ -226,6 +227,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
 
           setFormData({
             productName: data?.product_name || data?.name || "",
+            productCategory: data?.product_category || "",
             targetPersona:
               data?.persona || data?.audience || data?.target_audience || "",
             primaryJob: data?.primary_job || data?.jobs_to_be_done || "",
@@ -298,7 +300,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
                 return item;
               }),
             );
-          }, index * 1200),
+          }, index * 400),
         );
       });
 
@@ -321,6 +323,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
             .insert({
               user_id: user.id,
               product_name: formData.productName,
+              product_category: formData.productCategory || null,
               product_description: formData.valueProposition,
               persona: formData.targetPersona,
               pain_points_solved: formData.painsFrustrations,
@@ -370,7 +373,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
             );
             setTimeout(() => navigate("/dashboard"), 800);
           },
-          launchStatus.length * 1200 + 500,
+          launchStatus.length * 400 + 300,
         ),
       );
 
