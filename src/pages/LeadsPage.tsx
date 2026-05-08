@@ -23,7 +23,7 @@ import { useProducts } from "../hooks/useProducts";
 import { useLeads, TimeFilter, StatusFilter } from "../hooks/useLeads";
 import { useLeadMetrics } from "../hooks/useLeadMetrics";
 import { formatTimeAgo } from "../lib/formatTimeAgo";
-import { useUserProfile } from "../hooks/useUserProfile";
+import { useUserProfile, useTrialDaysRemaining } from "../hooks/useUserProfile";
 import { useAuth } from "../contexts/AuthContext";
 import { supabase } from "../integrations/supabase/client";
 import { toast } from "sonner";
@@ -140,18 +140,33 @@ export default function LeadsPage({
     });
   }, [leads, activeFilter]);
 
+  // First-impression mode: new accounts (≤20 total leads) see score ≥8 only by default
+  // so their first experience shows the strongest signals, not mixed quality
+  const isFirstImpression =
+    !isShowcase &&
+    activeFilter === "all" &&
+    metrics.total > 0 &&
+    metrics.total <= 20;
+  const firstImpressionLeads = isFirstImpression
+    ? filteredLeads.filter((l) => l.intent_score >= 8)
+    : filteredLeads;
+  const displayLeads = firstImpressionLeads;
+
   const isLoading = isLoadingProducts || isLoadingLeads;
 
   // Paywall: free-tier users see only the first FREE_LEAD_LIMIT leads
+  // Active trial grants same access as paid
   const subscriptionTier = userProfile?.subscription_tier || "free";
+  const trialDaysRemaining = useTrialDaysRemaining(userProfile);
+  const isOnActiveTrial = trialDaysRemaining !== null && trialDaysRemaining > 0;
   const isPaidUser =
-    subscriptionTier === "starter" || subscriptionTier === "pro";
+    subscriptionTier === "starter" || subscriptionTier === "pro" || isOnActiveTrial;
   const visibleLeads = isPaidUser
-    ? filteredLeads
-    : filteredLeads.slice(0, FREE_LEAD_LIMIT);
+    ? displayLeads
+    : displayLeads.slice(0, FREE_LEAD_LIMIT);
   const lockedLeadCount = isPaidUser
     ? 0
-    : Math.max(0, filteredLeads.length - FREE_LEAD_LIMIT);
+    : Math.max(0, displayLeads.length - FREE_LEAD_LIMIT);
 
   const handleCheckout = async (plan: "starter" | "pro") => {
     if (!session?.access_token) {
@@ -190,6 +205,36 @@ export default function LeadsPage({
           isShowcase ? "space-y-5" : "space-y-8",
         )}
       >
+        {/* Trial countdown banner */}
+        {!isShowcase && isOnActiveTrial && (
+          <div className={cn(
+            "flex items-center justify-between gap-4 rounded-xl px-5 py-3 text-sm font-medium",
+            trialDaysRemaining <= 2
+              ? "bg-amber-50 border border-amber-200 text-amber-800"
+              : "bg-emerald-50 border border-emerald-200 text-emerald-800",
+          )}>
+            <span>
+              {trialDaysRemaining === 0
+                ? "Your trial expires today."
+                : `${trialDaysRemaining} day${trialDaysRemaining === 1 ? "" : "s"} left in your free trial.`}
+              {" "}You have full access to all leads.
+            </span>
+            <Button
+              size="sm"
+              onClick={() => handleCheckout("starter")}
+              disabled={checkoutLoading !== null}
+              className={cn(
+                "shrink-0 rounded-full font-semibold",
+                trialDaysRemaining <= 2
+                  ? "bg-amber-600 hover:bg-amber-700 text-white"
+                  : "bg-emerald-600 hover:bg-emerald-700 text-white",
+              )}
+            >
+              Upgrade to keep access
+            </Button>
+          </div>
+        )}
+
         {/* Header Section (Context Switcher) */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
           <div className="relative">
@@ -479,6 +524,19 @@ export default function LeadsPage({
             isShowcase ? "!mt-6" : "!mt-10",
           )}
         >
+          {/* First-impression notice — shown to new accounts seeing score ≥8 only */}
+          {isFirstImpression && firstImpressionLeads.length > 0 && (
+            <div className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl px-5 py-3 text-sm text-slate-600">
+              <span>Showing your <strong>{firstImpressionLeads.length} best matches</strong> (score 8+)</span>
+              <button
+                onClick={() => setActiveFilter("all")}
+                className="text-slate-900 font-semibold underline underline-offset-2 hover:no-underline"
+              >
+                View all {filteredLeads.length} leads
+              </button>
+            </div>
+          )}
+
           {isLoading && !isShowcase ? (
             <>
               <LeadCardSkeleton />
