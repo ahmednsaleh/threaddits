@@ -107,7 +107,7 @@ export default function EditProductPage() {
       if (!id) return [];
       const { data, error } = await supabase
         .from("system_actions")
-        .select("*")
+        .select("id, action_type, action_details, executed_at")
         .eq("product_id", id)
         .order("executed_at", { ascending: false })
         .limit(15);

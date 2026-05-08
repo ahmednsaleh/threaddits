@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -69,6 +69,7 @@ export function useLeads({
   const { user } = useAuth();
 
   const queryClient = useQueryClient();
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!user?.id || !productId) return;
@@ -84,14 +85,21 @@ export function useLeads({
           filter: `product_id=eq.${productId}`,
         },
         () => {
-          queryClient.invalidateQueries({
-            queryKey: ["leads", user.id, productId],
-          });
+          // Debounce: batch rapid inserts into a single refetch after 60s.
+          // The bot inserts multiple leads per crawl run — without debouncing,
+          // each insert triggers a full 2MB re-download of all leads.
+          if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+          debounceTimerRef.current = setTimeout(() => {
+            queryClient.invalidateQueries({
+              queryKey: ["leads", user.id, productId],
+            });
+          }, 60_000);
         },
       )
       .subscribe();
 
     return () => {
+      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
       supabase.removeChannel(channel);
     };
   }, [user?.id, productId, queryClient]);
@@ -114,7 +122,7 @@ export function useLeads({
         p_product_id: productId,
         p_status: statusFilter !== "Show All" ? statusFilter : null,
         p_time_after: timeDate ? timeDate.toISOString() : null,
-        p_limit: 500,
+        p_limit: 100,
       });
 
       if (error) throw error;
