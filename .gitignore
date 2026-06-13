@@ -23,3 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 .env
+
+# DevOps cleanup 2026-06-13 — keep local, do not publish to public repo
+supabase/.temp/
+.planning/
