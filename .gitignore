@@ -27,3 +27,6 @@ dist-ssr
 # DevOps cleanup 2026-06-13 — keep local, do not publish to public repo
 supabase/.temp/
 .planning/
+
+# session-continuity hook config — local only, never ship to clones (ADR-016)
+.claude/settings.json
